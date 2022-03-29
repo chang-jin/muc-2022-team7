@@ -1,16 +1,16 @@
-package com.snu.muc.dogeeye.ui.dashboard;
+package com.snu.muc.dogeeye.ui.photo;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class DashboardViewModel extends ViewModel {
+public class PhotoViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public DashboardViewModel() {
+    public PhotoViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
+        mText.setValue("This is photo fragment");
     }
 
     public LiveData<String> getText() {

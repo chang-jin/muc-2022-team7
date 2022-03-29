@@ -12,14 +12,20 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.snu.muc.dogeeye.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_photo"
+        android:name="com.snu.muc.dogeeye.ui.photo.PhotoFragment"
+        android:label="@string/title_photo"
+        tools:layout="@layout/fragment_photo" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.snu.muc.dogeeye.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_record"
+        android:name="com.snu.muc.dogeeye.ui.record.RecordFragment"
+        android:label="@string/title_record"
+        tools:layout="@layout/fragment_record" />
+
+    <fragment
+        android:id="@+id/navigation_quest"
+        android:name="com.snu.muc.dogeeye.ui.quest.QuestFragment"
+        android:label="@string/title_quest"
+        tools:layout="@layout/fragment_quest" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye.ui.notifications;
+package com.snu.muc.dogeeye.ui.record;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,24 +12,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.snu.muc.dogeeye.R;
-import com.snu.muc.dogeeye.databinding.FragmentNotificationsBinding;
+import com.snu.muc.dogeeye.databinding.FragmentRecordBinding;
 
-public class NotificationsFragment extends Fragment {
+public class RecordFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
-    private FragmentNotificationsBinding binding;
+    private RecordViewModel recordViewModel;
+    private FragmentRecordBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        recordViewModel =
+                new ViewModelProvider(this).get(RecordViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentRecordBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView textView = binding.textDashboard;
+        recordViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

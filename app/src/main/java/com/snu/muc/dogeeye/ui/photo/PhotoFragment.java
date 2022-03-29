@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye.ui.dashboard;
+package com.snu.muc.dogeeye.ui.photo;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,24 +12,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.snu.muc.dogeeye.R;
-import com.snu.muc.dogeeye.databinding.FragmentDashboardBinding;
+import com.snu.muc.dogeeye.databinding.FragmentPhotoBinding;
 
-public class DashboardFragment extends Fragment {
+public class PhotoFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
-    private FragmentDashboardBinding binding;
+    private PhotoViewModel photoViewModel;
+    private FragmentPhotoBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        photoViewModel =
+                new ViewModelProvider(this).get(PhotoViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentPhotoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView textView = binding.textPhoto;
+        photoViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
