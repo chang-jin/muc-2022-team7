@@ -10,7 +10,7 @@ public class QuestViewModel extends ViewModel {
 
     public QuestViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mText.setValue("This is quest fragment");
     }
 
     public LiveData<String> getText() {
