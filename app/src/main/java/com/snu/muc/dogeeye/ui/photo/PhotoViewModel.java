@@ -16,4 +16,11 @@ public class PhotoViewModel extends ViewModel {
     public LiveData<String> getText() {
         return mText;
     }
+    public void setText(String string) {
+        mText.setValue(string);
+    }
+
+    public void postText(String string) {
+        mText.postValue(string);
+    }
 }
