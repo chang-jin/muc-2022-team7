@@ -9,6 +9,10 @@
         android:roundIcon="@mipmap/doge_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DogeEye">
+
+        <meta-data android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
