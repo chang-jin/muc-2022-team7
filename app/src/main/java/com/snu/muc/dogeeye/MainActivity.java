@@ -12,9 +12,14 @@ import com.google.android.gms.games.PlayGamesSdk;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+
+    public static ttsModule main_tts;
+    public static sttModule main_stt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,5 +39,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         PlayGamesSdk.initialize(this);
+
+
+        main_tts = new ttsModule(this, Locale.US);
+        main_stt = new sttModule(this, Locale.US);
     }
 }
