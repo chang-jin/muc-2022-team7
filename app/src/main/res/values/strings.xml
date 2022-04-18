@@ -4,4 +4,7 @@
     <string name="title_photo">Photo</string>
     <string name="title_record">Record</string>
     <string name="title_quest">Quest</string>
+
+    <string translatable="false" name="game_services_project_id">601775852778</string>
+    <string translatable="false" name="leaderboard_id">CgkI6pmL5cEREAIQAQ</string>
 </resources>
