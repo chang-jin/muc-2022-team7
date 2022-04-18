@@ -9,11 +9,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,9 +38,15 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.snu.muc.dogeeye.LogEntity;
 import com.snu.muc.dogeeye.MainActivity;
+import com.snu.muc.dogeeye.Project;
+import com.snu.muc.dogeeye.ProjectDB;
+import com.snu.muc.dogeeye.ProjectDao;
 import com.snu.muc.dogeeye.databinding.FragmentRecordBinding;
 
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class RecordFragment extends Fragment implements SensorEventListener {
@@ -52,10 +60,18 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor stepCountSensor;
 
+    private ProjectDao pado;
+    private ProjectDB pdb;
+    recThread rthread;
+    Button recButton;
+    boolean recoding = false;
+    int curProject;
+    float globalStep;
+    private double longitude, latitude;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
-    private double longitude, latitude;
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -64,6 +80,31 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     public static final int DEFAULT_LOCATION_REQUEST_PRIORITY = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
     public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 20000L;
     public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 10000L;
+
+    private class recThread extends Thread{
+        @Override
+        public void run(){
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(recoding){
+                LogEntity lg = new LogEntity();
+                long mNow = System.currentTimeMillis();
+                Date mDate = new Date(mNow);
+                SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                lg.setPID(curProject);
+                lg.setLo(latitude);
+                lg.setLo(longitude);
+                lg.setGlobalStep(globalStep);
+                lg.setLogTime(mFormat.format(mDate));
+
+                pado.addLog(lg);
+            }
+        }
+    }
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -141,17 +182,44 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         else{
             sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
         }
-        stepView = binding.stepView;
-        locView = binding.locView;
-        final TextView textView = binding.textDashboard;
-        recordViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        stepView = binding.textView;
+        locView = binding.textView2;
+        recButton = binding.button3;
+
+        recButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onClick(View view) {
+
+                if(recoding) {
+                    recoding = false;
+                    Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Project proj = new Project();
+                    long mNow = System.currentTimeMillis();
+                    Date mDate = new Date(mNow);
+                    SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    proj.setStartTime(mFormat.format(mDate));
+
+                    pado.addProject(proj);
+                    curProject = pado.getAllProjects().size();
+
+                    Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
+
+                    recoding = true;
+                }
             }
         });
 
         checkLocationSetting();
+
+        pdb = ProjectDB.getProjectDB(getActivity());
+
+        pado = pdb.projectDao();
+
+        rthread = new recThread();
+        rthread.start();
+
         return root;
     }
 
@@ -164,8 +232,9 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            globalStep = sensorEvent.values[0];
 
-            stepView.setText("Step : " + sensorEvent.values[0]);
+            stepView.setText("Step : " + globalStep);
 
             Toast.makeText(getContext(),"Sensor Called!",Toast.LENGTH_SHORT).show();
         }

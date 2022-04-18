@@ -34,6 +34,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 
@@ -108,6 +109,33 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         checkLocationPermission();
+
+
+        ProjectDB pdb = ProjectDB.getProjectDB(getApplicationContext());
+
+        ProjectDao pdao = pdb.projectDao();
+
+//        Project proj = new Project();
+//        proj.setStartTime("15:22");
+//        pdao.addProject(proj);
+
+//        Project proj2 = new Project();
+//        proj2.setStartTime("15:22");
+//        pdao.addProject(proj2);
+
+//        LogEntity lg = new LogEntity();
+//        lg.setPID(2);
+//        lg.setLa("010101010");
+//        lg.setLo("979797979");
+//        pdao.addLog(lg);
+//
+//        LogEntity lg2 = new LogEntity();
+//        lg2.setPID(2);
+//        lg2.setLa("202020202");
+//        lg2.setLo("676767676");
+//        pdao.addLog(lg2);
+
+
     }
 
 }
