@@ -1,12 +1,6 @@
 package com.snu.muc.dogeeye;
 
 import android.os.Bundle;
-import android.util.Log;
-
-import com.google.android.gms.games.GamesSignInClient;
-import com.google.android.gms.games.PlayGames;
-import com.google.android.gms.games.PlayGamesSdk;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -14,6 +8,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.games.PlayGamesSdk;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,38 +34,5 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         PlayGamesSdk.initialize(this);
-
-        checkUserSignIn();
     }
-
-    private void checkUserSignIn() {
-        GamesSignInClient gamesSignInClient = PlayGames.getGamesSignInClient(this);
-
-        gamesSignInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask -> {
-            Log.d("Changjin", "isAuthenticated : " + isAuthenticatedTask.isSuccessful());
-            Log.d("Changjin", "isAuthenticated2 : " + isAuthenticatedTask.getResult().isAuthenticated());
-            boolean isAuthenticated =
-                    (isAuthenticatedTask.isSuccessful() &&
-                            isAuthenticatedTask.getResult().isAuthenticated());
-
-            if (isAuthenticated) {
-                // Continue with Play Games Services
-                Log.d("Changjin", "isAuthenticated");
-                PlayGames.getPlayersClient(this).getCurrentPlayer().addOnCompleteListener(mTask -> {
-                            // Get PlayerID with mTask.getResult().getPlayerId()
-                            Log.d("Changjin", "get player");
-//                    Log.d("Changjin", "get player : " + mTask.getResult().getPlayerId());
-
-                        }
-                );
-            } else {
-                // Disable your integration with Play Games Services or show a
-                // login button to ask  players to sign-in. Clicking it should
-                // call GamesSignInClient.signIn().
-                Log.d("Changjin", "signIn");
-                gamesSignInClient.signIn();
-            }
-        });
-    }
-
 }
