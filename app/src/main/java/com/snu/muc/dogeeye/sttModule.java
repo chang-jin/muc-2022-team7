@@ -12,7 +12,10 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class sttModule {
@@ -25,16 +28,30 @@ public class sttModule {
     public Intent sttIntent;
     public static String result_text;
 
+    public int current_mode = 0;
+    private int total_modes = 10;
+    public List<Map<String, Integer>> action_maps;
+
     private Boolean over = true;
 
-    public sttModule(Context context, Locale locale) {
+    public sttModule(Context context, Locale locale, int n_modes) {
+        total_modes = n_modes;
         this.locale = locale;
-        speechToText = SpeechRecognizer.createSpeechRecognizer(context);
         thisContext = context;
+        speechToText = SpeechRecognizer.createSpeechRecognizer(context);
 
         sttIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
         sttIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
+        action_maps = new ArrayList<>();
+        // hard_coded for now
+        Map<String, Integer> home_actions = new HashMap<String, Integer>();
+
+        home_actions.put("photo", 1);
+        home_actions.put("quest", 2);
+        home_actions.put("record", 3);
+        action_maps.add(home_actions);
 
         listener = new RecognitionListener() {
             @Override
@@ -101,6 +118,7 @@ public class sttModule {
                 }
 
                 Log.e(TAG, message);
+                over = true;
             }
 
             @Override
@@ -142,17 +160,35 @@ public class sttModule {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-//                        FragmentManager fragmentManager = getFragmentManager();
-//                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                        PhotoFragment photoFrag = new PhotoFragment();
-//                        fragmentTransaction.replace(R.id.container, photoFrag);
-//                        fragmentTransaction.commit();
-                // yourMethod();
+
             }
-        }, 3000);   //5 seconds
+        }, 3000);
         Log.e(TAG, "new text: " + result_text);
 
         return result_text;
+    }
+
+    public int listen_and_give_code(Context context, int current_mode) {
+        speechToText = SpeechRecognizer.createSpeechRecognizer(context);
+        speechToText.setRecognitionListener(listener);
+        speechToText.startListening(sttIntent);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+
+            }
+        }, 3000);
+
+        int result_code;
+        result_code = -1;
+
+        for (Map.Entry<String, Integer> entry : action_maps.get(current_mode).entrySet()) {
+            if(result_text.contains(entry.getKey())){
+                result_code = entry.getValue();
+            }
+        }
+        
+        return result_code;
     }
 
 }
