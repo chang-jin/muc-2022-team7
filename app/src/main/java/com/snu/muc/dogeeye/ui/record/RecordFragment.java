@@ -184,7 +184,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         }
         stepView = binding.textView;
         locView = binding.textView2;
-        recButton = binding.button3;
+        recButton = binding.button;
 
         recButton.setOnClickListener(new View.OnClickListener() {
             @Override
