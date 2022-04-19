@@ -7,6 +7,16 @@
     tools:context=".ui.home.HomeFragment">
 
     <Button
+        android:id="@+id/button2"
+        android:layout_width="94dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="64dp"
+        android:text="Listen2_Code"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/test_listen_result" />
+
+    <Button
         android:id="@+id/button1"
         android:layout_width="94dp"
         android:layout_height="48dp"
@@ -34,6 +44,17 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/button1"
         app:layout_constraintTop_toBottomOf="@+id/editTextTab"
+        tools:layout_editor_absoluteX="3dp" />
+
+    <TextView
+        android:id="@+id/test_listen_result2"
+        android:layout_width="408dp"
+        android:layout_height="111dp"
+        android:layout_marginBottom="158dp"
+        android:text="This is the STT Code"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
     <Button

@@ -40,6 +40,8 @@ public class HomeFragment extends Fragment {
         final TextView listenText = binding.testListenResult;
         final Button button0 = binding.button0;
         final Button button1 = binding.button1;
+        final Button button2 = binding.button2;
+
 
         final EditText editTextTab = binding.editTextTab;
 
@@ -54,6 +56,14 @@ public class HomeFragment extends Fragment {
                 Log.e("BTN", "button1 clicked");
                 String return_text = main_stt.listen2(getContext());
                 listenText.setText(return_text);
+
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.e("BTN", "button2 clicked");
+                int text_to_code = main_stt.listen_and_give_code(getContext(), 0);
 
             }
         });

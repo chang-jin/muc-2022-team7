@@ -26,7 +26,7 @@ public class sttModule {
     private Locale locale;
     private Context thisContext;
     public Intent sttIntent;
-    public static String result_text;
+    public static String result_text = "default result";
 
     public int current_mode = 0;
     private int total_modes = 10;
@@ -34,8 +34,7 @@ public class sttModule {
 
     private Boolean over = true;
 
-    public sttModule(Context context, Locale locale, int n_modes) {
-        total_modes = n_modes;
+    public sttModule(Context context, Locale locale) {
         this.locale = locale;
         thisContext = context;
         speechToText = SpeechRecognizer.createSpeechRecognizer(context);
@@ -187,7 +186,7 @@ public class sttModule {
                 result_code = entry.getValue();
             }
         }
-        
+
         return result_code;
     }
 
