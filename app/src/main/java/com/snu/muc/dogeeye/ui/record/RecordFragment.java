@@ -10,6 +10,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.icu.text.SimpleDateFormat;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -38,19 +41,23 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.snu.muc.dogeeye.EntityAdaptor;
 import com.snu.muc.dogeeye.LogEntity;
 import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.Project;
 import com.snu.muc.dogeeye.ProjectDB;
 import com.snu.muc.dogeeye.ProjectDao;
+import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.databinding.FragmentRecordBinding;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public class RecordFragment extends Fragment implements SensorEventListener {
 
+    private ArrayList<Project> projectList;
     private TextView stepView;
     private TextView locView;
     private Context mContext;
@@ -59,15 +66,24 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     private FragmentRecordBinding binding;
     private SensorManager sensorManager;
     private Sensor stepCountSensor;
-
-    private ProjectDao pado;
+    private Sensor stepDetectorSensor;
+    private Geocoder g;
+    private ProjectDao pDao;
     private ProjectDB pdb;
     recThread rthread;
     Button recButton;
     boolean recoding = false;
-    int curProject;
+    int curProject = 0;
     float globalStep;
+    float localStep;
     private double longitude, latitude;
+    List<LogEntity> logs;
+    private String landMark="";
+    private String endTime;
+    private float maxDistance;
+    private float totalDistance;
+    private Location startLoc, endLoc, midLoc;
+    EntityAdaptor entityAdaptor;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -81,27 +97,116 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 20000L;
     public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 10000L;
 
-    private class recThread extends Thread{
+    private class updateThread extends Thread{
         @Override
-        public void run(){
+        public void run() {
+            Log.d("uThread","Start");
+            logs = pDao.getProjectLog(curProject);
+            Project project = pDao.getProjectsByID(curProject);
+
+            maxDistance=0;
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(recoding){
-                LogEntity lg = new LogEntity();
-                long mNow = System.currentTimeMillis();
-                Date mDate = new Date(mNow);
-                SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-                lg.setPID(curProject);
-                lg.setLo(latitude);
-                lg.setLo(longitude);
-                lg.setGlobalStep(globalStep);
-                lg.setLogTime(mFormat.format(mDate));
+            for(int i = 0 ; i < logs.size() ; ++i){
+                String lm="";
+                double startLo, startLa;
+                LogEntity logEntity=logs.get(i);
 
-                pado.addLog(lg);
+
+                Log.d("uThread","working...");
+                List<Address> address;
+                try {
+                    address = g.getFromLocation(logEntity.getLa(),logEntity.getLo(),10);
+
+                    if(address!=null) {
+                        if (address.size() == 0) {
+                            Log.d("주소찾기 오류","주소찾기 오류");
+                        } else {
+                            Log.d("찾은 주소", address.get(0).getFeatureName());
+                        }
+                    }
+                    lm = address.get(0).getFeatureName();
+                    LogEntity newLog = new LogEntity();
+                    newLog.copyEntity(logEntity);
+                    newLog.setLocName(lm);
+                    pDao.updLog(newLog);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(i == 0){
+                    landMark+="_"+lm;
+                    startLoc = new Location("start");
+                    startLoc.setLatitude(logEntity.getLa());
+                    startLoc.setLongitude(logEntity.getLo());
+                }
+                else if(i == logs.size() -1){
+                    endTime = logEntity.getLogTime();
+                    landMark+="_"+lm;
+                    endLoc = new Location("end");
+                    endLoc.setLatitude(logEntity.getLa());
+                    endLoc.setLongitude(logEntity.getLo());
+                    totalDistance = startLoc.distanceTo(endLoc);
+                }
+                else
+                {
+                    midLoc = new Location("mid");
+                    midLoc.setLatitude(logEntity.getLa());
+                    midLoc.setLongitude(logEntity.getLo());
+                    float tmp = startLoc.distanceTo(midLoc);
+                    if(tmp > maxDistance)
+                        maxDistance = tmp;
+                }
+            }
+
+            Project newProject = new Project();
+            newProject.copyProject(project);
+            newProject.setEndTime(endTime);
+            newProject.setTotalDistance(totalDistance);
+            newProject.setRange(maxDistance);
+            newProject.setAddress(landMark);
+            newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
+
+            pDao.updProject(newProject);
+
+            projectList = (ArrayList<Project>) pDao.getAllProjects();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            entityAdaptor.setLogList(projectList);
+        }
+    }
+
+    private class recThread extends Thread{
+        @Override
+        public void run(){
+            while (true) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (recoding) {
+                    LogEntity lg = new LogEntity();
+                    long mNow = System.currentTimeMillis();
+                    Date mDate = new Date(mNow);
+                    SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                    lg.setPID(curProject);
+                    lg.setLa(latitude);
+                    lg.setLo(longitude);
+                    lg.setGlobalStep(globalStep);
+                    lg.setLocalStep(localStep);
+                    lg.setLogTime(mFormat.format(mDate));
+
+                    pDao.addLog(lg);
+                }
             }
         }
     }
@@ -176,12 +281,24 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
         if (stepCountSensor == null) {
-            Toast.makeText(getContext(), "No Step Sensor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
         }
         else{
             sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
         }
+
+        if (stepDetectorSensor == null) {
+            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            sensorManager.registerListener(this,stepDetectorSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        }
+
+        g = new Geocoder(getContext());
+
         stepView = binding.textView;
         locView = binding.textView2;
         recButton = binding.button;
@@ -192,17 +309,26 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
                 if(recoding) {
                     recoding = false;
+                    updateThread uthread = new updateThread();
+                    uthread.start();
+                    try {
+                        uthread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    entityAdaptor.notifyDataSetChanged();
                     Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    localStep = 0;
                     Project proj = new Project();
                     long mNow = System.currentTimeMillis();
                     Date mDate = new Date(mNow);
                     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     proj.setStartTime(mFormat.format(mDate));
 
-                    pado.addProject(proj);
-                    curProject = pado.getAllProjects().size();
+                    pDao.addProject(proj);
+                    curProject = pDao.getAllProjects().size();
 
                     Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
 
@@ -215,10 +341,19 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
         pdb = ProjectDB.getProjectDB(getActivity());
 
-        pado = pdb.projectDao();
+        pDao = pdb.projectDao();
 
         rthread = new recThread();
         rthread.start();
+
+        projectList = (ArrayList<Project>) pDao.getAllProjects();
+
+        RecyclerView recyclerView = binding.rv;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        entityAdaptor = new EntityAdaptor(projectList);
+        recyclerView.setAdapter(entityAdaptor);
+
 
         return root;
     }
@@ -231,12 +366,15 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+
+        Toast.makeText(getContext(),"Step Update!",Toast.LENGTH_SHORT).show();
         if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             globalStep = sensorEvent.values[0];
 
             stepView.setText("Step : " + globalStep);
-
-            Toast.makeText(getContext(),"Sensor Called!",Toast.LENGTH_SHORT).show();
+        }
+        else if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
+            localStep += sensorEvent.values[0];
         }
     }
 

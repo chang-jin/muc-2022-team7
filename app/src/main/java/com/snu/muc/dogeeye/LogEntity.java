@@ -94,4 +94,14 @@ public class LogEntity {
     public void setPID(int PID) {
         this.PID = PID;
     }
+
+    public void copyEntity(LogEntity entity){
+        this.La = entity.getLa();
+        this.Lo = entity.getLo();
+        this.globalStep = entity.getGlobalStep();
+        this.localStep = entity.getLocalStep();
+        this.logTime = entity.getLogTime();
+        this.PID = entity.getPID();
+        this.LID = entity.getLID();
+    }
 }

@@ -24,6 +24,9 @@ public interface ProjectDao {
     @Query("select * from Project")
     List<Project> getAllProjects();
 
+    @Query("select * from Project where id = :id")
+    Project getProjectsByID(int id);
+
     @Insert
     void addLog(LogEntity log);
 
