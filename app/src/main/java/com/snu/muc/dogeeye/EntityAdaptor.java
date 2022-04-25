@@ -65,8 +65,13 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
         holder.projectNum.setText(String.valueOf(project.getId()));
         holder.startTime.setText(project.getStartTime());
         holder.endTime.setText(project.getEndTime());
-        String[] tmp = project.getAddress().split("_");
-        holder.address.setText(tmp[1]+"~\n"+tmp[2]);
+        try{
+            String[] tmp = project.getAddress().split("_");
+            holder.address.setText(tmp[1]+"~\n"+tmp[2]);
+        }catch (Exception e){
+            holder.address.setText("Failed Log");
+        }
+
         holder.totalStep.setText(String.valueOf((int) project.getTotalStep()));
         holder.totalDistance.setText(decimalFormat.format(project.getTotalDistance()));
         holder.maxRange.setText((decimalFormat.format(project.getRange())));
