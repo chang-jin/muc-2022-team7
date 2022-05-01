@@ -11,6 +11,15 @@ buildscript {
         // in the individual module build.gradle files
 
         classpath 'com.google.gms:google-services:4.3.10'
+        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
+    }
+}
+
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'org.xerial:sqlite-jdbc:3.34.0'
+        }
     }
 }
 

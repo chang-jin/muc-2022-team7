@@ -1,8 +1,10 @@
 package com.snu.muc.dogeeye;
 
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
@@ -29,6 +31,7 @@ public class LogEntity {
 
     private float globalStep;
 
+    @ColumnInfo(index = true)
     private int PID;
 
     public int getLID() {

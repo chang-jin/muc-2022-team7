@@ -1,10 +1,12 @@
 package com.snu.muc.dogeeye.ui.record;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -38,13 +41,22 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.snu.muc.dogeeye.LogEntity;
 import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.Project;
 import com.snu.muc.dogeeye.ProjectDB;
 import com.snu.muc.dogeeye.ProjectDao;
+import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.databinding.FragmentRecordBinding;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -68,6 +80,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     int curProject;
     float globalStep;
     private double longitude, latitude;
+    private PlacesClient placesClient;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -81,15 +94,15 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 20000L;
     public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 10000L;
 
-    private class recThread extends Thread{
+    private class recThread extends Thread {
         @Override
-        public void run(){
+        public void run() {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(recoding){
+            if (recoding) {
                 LogEntity lg = new LogEntity();
                 long mNow = System.currentTimeMillis();
                 Date mDate = new Date(mNow);
@@ -114,7 +127,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
             latitude = locationResult.getLastLocation().getLatitude();
             locView.setText(longitude + ", " + latitude);
 
-            Toast.makeText(getContext(),"LOC is called!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "LOC is called!", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -178,9 +191,8 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (stepCountSensor == null) {
             Toast.makeText(getContext(), "No Step Sensor", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST);
         }
         stepView = binding.textView;
         locView = binding.textView2;
@@ -190,11 +202,10 @@ public class RecordFragment extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
 
-                if(recoding) {
+                if (recoding) {
                     recoding = false;
-                    Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
-                }
-                else {
+                    Toast.makeText(getContext(), "Recording End", Toast.LENGTH_SHORT).show();
+                } else {
                     Project proj = new Project();
                     long mNow = System.currentTimeMillis();
                     Date mDate = new Date(mNow);
@@ -204,7 +215,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
                     pado.addProject(proj);
                     curProject = pado.getAllProjects().size();
 
-                    Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Recording Start", Toast.LENGTH_SHORT).show();
 
                     recoding = true;
                 }
@@ -220,7 +231,42 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         rthread = new recThread();
         rthread.start();
 
+        // Construct a PlacesClient
+        Places.initialize(mContext.getApplicationContext(), getString(R.string.maps_api_key));
+        placesClient = Places.createClient(activity);
+        checkCurrentPlace();
+
         return root;
+    }
+
+    private void checkCurrentPlace() {
+        Log.d(TAG, "checkCurrentPlace");
+        // Use fields to define the data types to return.
+        List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
+
+        // Use the builder to create a FindCurrentPlaceRequest.
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+
+        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+            placeResponse.addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FindCurrentPlaceResponse response = task.getResult();
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
+                                placeLikelihood.getPlace().getName(),
+                                placeLikelihood.getLikelihood()));
+                    }
+                } else {
+                    Exception exception = task.getException();
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -231,12 +277,12 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             globalStep = sensorEvent.values[0];
 
             stepView.setText("Step : " + globalStep);
 
-            Toast.makeText(getContext(),"Sensor Called!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Sensor Called!", Toast.LENGTH_SHORT).show();
         }
     }
 
