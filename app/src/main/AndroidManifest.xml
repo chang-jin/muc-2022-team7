@@ -21,9 +21,15 @@
         android:roundIcon="@mipmap/doge_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DogeEye">
+<<<<<<< HEAD
 
         <meta-data android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/game_services_project_id"/>
+=======
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/maps_api_key" />
+>>>>>>> 87920e2 (Added logic to check current place)
 
         <activity
             android:name=".MainActivity"
@@ -35,6 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
