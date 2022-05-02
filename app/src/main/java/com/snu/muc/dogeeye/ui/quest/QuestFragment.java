@@ -32,6 +32,7 @@ public class QuestFragment extends Fragment {
 
     private static final Logger log = new Logger();
     private static final int RC_LEADERBOARD_UI = 9004;
+    private static final int RC_ACHIEVEMENT_UI = 9003;
     private Activity mActivity;
     private FragmentQuestBinding binding;
 
@@ -43,7 +44,9 @@ public class QuestFragment extends Fragment {
         View root = binding.getRoot();
 
         final Button leaderBoard = binding.leaderboardBtn;
+        final Button achievement = binding.achievementBtn;
         leaderBoard.setOnClickListener(view -> displayLeaderboard());
+        achievement.setOnClickListener(view -> showAchievements());
         checkUserSignIn();
 
         return root;
@@ -85,6 +88,7 @@ public class QuestFragment extends Fragment {
                     if (task.isSuccessful()) {
                         binding.welcome.setText(task.getResult().getDisplayName() + " Welcome!");
                         binding.leaderboardBtn.setVisibility(View.VISIBLE);
+                        binding.achievementBtn.setVisibility(View.VISIBLE);
 //                        submitScoreToLeaderboard();
                     }
                 }
@@ -98,6 +102,18 @@ public class QuestFragment extends Fragment {
                 .submitScore(getString(R.string.leaderboard_id), 50);
         PlayGames.getLeaderboardsClient(mActivity)
                 .submitScore(getString(R.string.leaderboard_id), 100);
+    }
+
+
+    private void showAchievements() {
+        PlayGames.getAchievementsClient(mActivity)
+                .getAchievementsIntent()
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_ACHIEVEMENT_UI);
+                    }
+                });
     }
 
     @Override

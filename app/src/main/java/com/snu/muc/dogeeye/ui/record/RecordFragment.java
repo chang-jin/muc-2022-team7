@@ -1,10 +1,11 @@
 package com.snu.muc.dogeeye.ui.record;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,9 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,6 +42,13 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.snu.muc.dogeeye.EntityAdaptor;
 import com.snu.muc.dogeeye.LogEntity;
 import com.snu.muc.dogeeye.MainActivity;
@@ -52,6 +60,7 @@ import com.snu.muc.dogeeye.databinding.FragmentRecordBinding;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -84,6 +93,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     private float totalDistance;
     private Location startLoc, endLoc, midLoc;
     EntityAdaptor entityAdaptor;
+    private PlacesClient placesClient;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -317,7 +327,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
 
-                if(recoding) {
+                if (recoding) {
                     recoding = false;
                     updateThread uthread = new updateThread();
                     uthread.start();
@@ -364,7 +374,42 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         recyclerView.setAdapter(entityAdaptor);
 
 
+        // Construct a PlacesClient
+        Places.initialize(mContext.getApplicationContext(), getString(R.string.maps_api_key));
+        placesClient = Places.createClient(activity);
+        checkCurrentPlace();
+
         return root;
+    }
+
+    private void checkCurrentPlace() {
+        Log.d(TAG, "checkCurrentPlace");
+        // Use fields to define the data types to return.
+        List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
+
+        // Use the builder to create a FindCurrentPlaceRequest.
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+
+        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+            placeResponse.addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FindCurrentPlaceResponse response = task.getResult();
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
+                                placeLikelihood.getPlace().getName(),
+                                placeLikelihood.getLikelihood()));
+                    }
+                } else {
+                    Exception exception = task.getException();
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+                    }
+                }
+            });
+        }
     }
 
     @Override
