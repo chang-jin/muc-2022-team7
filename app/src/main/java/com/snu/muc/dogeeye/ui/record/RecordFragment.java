@@ -106,7 +106,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
             maxDistance=0;
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -169,7 +169,13 @@ public class RecordFragment extends Fragment implements SensorEventListener {
             newProject.setTotalDistance(totalDistance);
             newProject.setRange(maxDistance);
             newProject.setAddress(landMark);
-            newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
+            try {
+                newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
+            }
+            catch (Exception e){
+                newProject.setTotalStep(1.0f);
+            }
+
 
             pDao.updProject(newProject);
 
@@ -207,6 +213,10 @@ public class RecordFragment extends Fragment implements SensorEventListener {
 
                     pDao.addLog(lg);
                 }
+                else
+                {
+                    break;
+                }
             }
         }
     }
@@ -219,7 +229,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
             latitude = locationResult.getLastLocation().getLatitude();
             locView.setText(longitude + ", " + latitude);
 
-            Toast.makeText(getContext(),"LOC is called!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(),"LOC is called!", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -284,14 +294,14 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         if (stepCountSensor == null) {
-            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
         }
         else{
             sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
         }
 
         if (stepDetectorSensor == null) {
-            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
         }
         else{
             sensorManager.registerListener(this,stepDetectorSensor,SensorManager.SENSOR_DELAY_FASTEST);
@@ -317,7 +327,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
                         e.printStackTrace();
                     }
                     entityAdaptor.notifyDataSetChanged();
-                    Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
                 }
                 else {
                     localStep = 0;
@@ -330,9 +340,12 @@ public class RecordFragment extends Fragment implements SensorEventListener {
                     pDao.addProject(proj);
                     curProject = pDao.getAllProjects().size();
 
-                    Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
 
                     recoding = true;
+
+                    rthread = new recThread();
+                    rthread.start();
                 }
             }
         });
@@ -342,10 +355,6 @@ public class RecordFragment extends Fragment implements SensorEventListener {
         pdb = ProjectDB.getProjectDB(getActivity());
 
         pDao = pdb.projectDao();
-
-        rthread = new recThread();
-        rthread.start();
-
         projectList = (ArrayList<Project>) pDao.getAllProjects();
 
         RecyclerView recyclerView = binding.rv;
@@ -367,7 +376,7 @@ public class RecordFragment extends Fragment implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        Toast.makeText(getContext(),"Step Update!",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(),"Step Update!",Toast.LENGTH_SHORT).show();
         if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             globalStep = sensorEvent.values[0];
 
