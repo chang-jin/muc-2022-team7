@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
@@ -48,6 +49,10 @@ public class PhotoFragment extends Fragment {
     private PhotoViewModel photoViewModel;
     private FragmentPhotoBinding binding;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private static final int ANALYSIS_DELAY_MS = 3_000;
+    private static final int INVALID_TIME = -1;
+    private long lastAnalysisTime = INVALID_TIME;
+
     private int imageSizeX;
     private int imageSizeY;
 
@@ -152,6 +157,15 @@ public class PhotoFragment extends Fragment {
         imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ImageAnalysis.Analyzer() {
             @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
+                final long now = SystemClock.uptimeMillis();
+
+                if (lastAnalysisTime != INVALID_TIME &&
+                        (now - lastAnalysisTime < ANALYSIS_DELAY_MS)) {
+                    imageProxy.close();
+                    return;
+                }
+                lastAnalysisTime = now;
+
                 int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
                 // image is expressed as JPEG, so need to decode to obtain bitmap
                 ImageProxy.PlaneProxy plane = imageProxy.getPlanes()[0];
