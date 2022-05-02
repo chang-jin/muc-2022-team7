@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -105,6 +106,9 @@ public class PhotoFragment extends Fragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            Matrix rotationMatrix = new Matrix();
+            rotationMatrix.postRotate(90);
+            imageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), rotationMatrix, true);
             ImageView captureImageView = photoCaptureDialog.findViewById(R.id.dialogImageView);
             TextView captureTextView = photoCaptureDialog.findViewById(R.id.dialogTextView);
             captureImageView.setImageBitmap(imageBitmap);
