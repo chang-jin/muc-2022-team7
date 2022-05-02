@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/priso/proj/master/muc-2022-team7/app/src/main/res/layout/fragment_record.xml" value="0.575" />
+        <entry key="..\:/Users/priso/proj/master/muc-2022-team7/app/src/main/res/layout/recycler.xml" value="0.2793819655521783" />
         <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.228125" />
         <entry key="app/src/main/res/drawable/ic_dashboard_photo_24dp.xml" value="0.228125" />
         <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.228125" />
