@@ -1,11 +1,6 @@
 package com.snu.muc.dogeeye.ui.photo;
 
-import static java.lang.Thread.sleep;
-
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
@@ -15,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
@@ -29,7 +23,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.snu.muc.dogeeye.databinding.FragmentPhotoBinding;
-
 import com.snu.muc.dogeeye.ui.photo.ImageCaptioner.Device;
 import com.snu.muc.dogeeye.ui.photo.ImageCaptioner.Model;
 
