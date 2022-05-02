@@ -135,7 +135,9 @@ public abstract class ImageCaptioner {
 
         String resultString = "";
         for (int i = 0; i < 22; i++) {
-            resultString += WORD_MAP[outputCaptionIds[i][0]] + " ";
+            String curWord = WORD_MAP[outputCaptionIds[i][0]];
+            if (curWord.equals("</S>")) continue;
+            resultString += curWord + " ";
         }
         return resultString;
     }
