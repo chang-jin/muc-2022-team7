@@ -1,20 +1,27 @@
 package com.snu.muc.dogeeye.ui.photo;
 
+import static android.app.Activity.RESULT_OK;
 import static java.lang.Thread.sleep;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -28,6 +35,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.databinding.FragmentPhotoBinding;
 
 import com.snu.muc.dogeeye.ui.photo.ImageCaptioner.Device;
@@ -39,6 +47,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 public class PhotoFragment extends Fragment {
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private final String TAG = "PhotoFragment";
 
     private ImageCaptioner imageCaptioner;
@@ -48,8 +57,11 @@ public class PhotoFragment extends Fragment {
     private int imageSizeX;
     private int imageSizeY;
 
+    private Dialog photoCaptureDialog;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        photoCaptureDialog = new PhotoCaptureDialog(getContext());
         // create tflite image captioner
         createImageCaptioner(Model.MOBILENET_GRU, Device.CPU, 1);
         if (imageCaptioner == null) {
@@ -84,6 +96,41 @@ public class PhotoFragment extends Fragment {
         return root;
     }
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ImageView captureImageView = photoCaptureDialog.findViewById(R.id.dialogImageView);
+            TextView captureTextView = photoCaptureDialog.findViewById(R.id.dialogTextView);
+            captureImageView.setImageBitmap(imageBitmap);
+            String caption = imageCaptioner.captionImage(imageBitmap, 0);
+            captureTextView.setText(caption);
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Bind capture button
+        Button captureButton = (Button) getView().findViewById(R.id.captureButton);
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick");
+                // capture the picture
+                dispatchTakePictureIntent();
+                // show dialog
+                photoCaptureDialog.show();
+            }
+        });
+    }
+
     private void createImageCaptioner(Model model, Device device, int numThreads) {
         if (imageCaptioner != null) {
             return;
@@ -112,7 +159,7 @@ public class PhotoFragment extends Fragment {
             @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
                 int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
-                // image is JPEG, so need to decode to obtain bitmap
+                // image is expressed as JPEG, so need to decode to obtain bitmap
                 ImageProxy.PlaneProxy plane = imageProxy.getPlanes()[0];
                 ByteBuffer byteBuffer = imageProxy.getPlanes()[0].getBuffer();
                 int pixelStride = plane.getPixelStride();
@@ -126,8 +173,7 @@ public class PhotoFragment extends Fragment {
                 if (bitmap == null) {
                     Log.d(TAG, "bitmap is null!");
                 } else {
-                    imageCaptioner.captionImage(bitmap, rotationDegrees);
-                    photoViewModel.postText(String.valueOf(rotationDegrees));
+                    photoViewModel.postText(imageCaptioner.captionImage(bitmap, rotationDegrees));
                 }
                 imageProxy.close();
             }

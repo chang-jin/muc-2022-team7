@@ -111,10 +111,6 @@ public abstract class ImageCaptioner {
         int imageTensorIndex = 0;
         Tensor imageTensor = tflite.getInputTensor(imageTensorIndex);
         int[] imageShape = imageTensor.shape();
-        Log.d(TAG, "Image shape: " + String.valueOf(imageShape[0]));
-        Log.d(TAG, String.valueOf(imageShape[1]));
-        Log.d(TAG, String.valueOf(imageShape[2]));
-        Log.d(TAG, String.valueOf(imageShape[3]));
         imageSizeX = imageShape[1]; // 224
         imageSizeY = imageShape[2]; // 224
         DataType imageDataType = imageTensor.dataType();
@@ -127,23 +123,21 @@ public abstract class ImageCaptioner {
 
     protected abstract String getModelPath();
 
-    public void captionImage(final Bitmap bitmap, int sensorOrientation) {
+    public String captionImage(final Bitmap bitmap, int sensorOrientation) {
         long startTimeForLoadImage = SystemClock.uptimeMillis();
         inputImageBuffer = loadImage(bitmap, sensorOrientation);
         long endTimeForLoadImage = SystemClock.uptimeMillis();
-        Log.d(TAG, "Image Load Time: " + (endTimeForLoadImage - startTimeForLoadImage));
 
         long startTimeForInference = SystemClock.uptimeMillis();
         ByteBuffer[] inputBuffers = { inputImageBuffer.getBuffer() };
         tflite.runForMultipleInputsOutputs(inputBuffers, outputBuffers);
         long endTimeForInference = SystemClock.uptimeMillis();
-        Log.d(TAG, "Inference Time: " + (endTimeForInference - startTimeForInference));
 
         String resultString = "";
         for (int i = 0; i < 22; i++) {
             resultString += WORD_MAP[outputCaptionIds[i][0]] + " ";
         }
-        Log.d(TAG, resultString);
+        return resultString;
     }
 
     public void close() {
@@ -173,10 +167,6 @@ public abstract class ImageCaptioner {
         inputImageBuffer.load(bitmap);
 
         int cropSize = min(bitmap.getWidth(), bitmap.getHeight());
-        Log.d(TAG, String.valueOf(bitmap.getWidth()));
-        Log.d(TAG, String.valueOf(bitmap.getHeight()));
-        Log.d(TAG, String.valueOf(imageSizeX));
-        Log.d(TAG, String.valueOf(imageSizeY));
         int numRotation = sensorOrientation / 90;
 
         ImageProcessor imageProcessor = new ImageProcessor.Builder()
