@@ -345,7 +345,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"stopThread",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "stopThread", Toast.LENGTH_LONG).show();
                 recoding = false;
                 uThread = new updateThread();
                 uThread.start();
@@ -354,6 +354,9 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
+                bottomSheet.show(getSupportFragmentManager(),"recording end");
             }
         });
 

@@ -4,7 +4,9 @@
     <string name="title_photo">Photo</string>
     <string name="title_record">Record</string>
     <string name="title_quest">Quest</string>
-    <string translatable="false" name="game_services_project_id">601775852778</string>
-    <string translatable="false" name="leaderboard_id">CgkI6pmL5cEREAIQAQ</string>
+    <string name="game_services_project_id" translatable="false">601775852778</string>
+    <string name="leaderboard_id" translatable="false">CgkI6pmL5cEREAIQAQ</string>
     <string name="maps_api_key">AIzaSyBBzPMiSQlfgcnZkuP_g45oYJS11wmi9Sc</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
