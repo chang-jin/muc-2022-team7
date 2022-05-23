@@ -1,6 +1,4 @@
-package com.snu.muc.dogeeye;
-
-import android.util.Log;
+package com.snu.muc.dogeeye.model;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

@@ -16,16 +16,4 @@
         android:name="com.snu.muc.dogeeye.ui.photo.PhotoFragment"
         android:label="@string/title_photo"
         tools:layout="@layout/fragment_photo" />
-
-    <fragment
-        android:id="@+id/navigation_record"
-        android:name="com.snu.muc.dogeeye.ui.record.RecordFragment"
-        android:label="@string/title_record"
-        tools:layout="@layout/fragment_record" />
-
-    <fragment
-        android:id="@+id/navigation_quest"
-        android:name="com.snu.muc.dogeeye.ui.quest.QuestFragment"
-        android:label="@string/title_quest"
-        tools:layout="@layout/fragment_quest" />
 </navigation>

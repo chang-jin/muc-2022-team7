@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye;
+package com.snu.muc.dogeeye.model;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

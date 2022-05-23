@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye;
+package com.snu.muc.dogeeye.model;
 
 import android.content.Context;
 

@@ -12,26 +12,29 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.games.GamesSignInClient;
+import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.snu.muc.dogeeye.common.Logger;
+import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
+import com.snu.muc.dogeeye.ui.RecordActivity;
 
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 1234;
-    private ActivityMainBinding binding;
 
-    public static ttsModule main_tts;
-    public static sttModule main_stt;
+    private ActivityMainBinding binding;
+    private TextSpeechModule mTTSModule;
+
+    private static final Logger log = new Logger();
 
     private static final int GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE = 100;
     private static final int ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE = 200;
+    private static final int RC_LEADERBOARD_UI = 9004;
+    private static final int RC_ACHIEVEMENT_UI = 9003;
 
     private void checkLocationPermission() {
         int accessLocation = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -40,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         if (accessLocation == PackageManager.PERMISSION_DENIED || accessActivity == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACTIVITY_RECOGNITION,Manifest.permission.INTERNET}, GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE);
         }
-
     }
 
     @Override
@@ -81,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mTTSModule = TextSpeechModule.getInstance();
+        mTTSModule.init(this, Locale.US);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -89,22 +94,75 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_photo, R.id.navigation_record, R.id.navigation_quest)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        binding.startRecording.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, RecordActivity.class);
+            startActivity(intent);
+        });
+
+        binding.gallery.setOnClickListener(view -> {
+            // TODO : Change to gallery
+            Intent intent = new Intent(MainActivity.this, RecordActivity.class);
+            startActivity(intent);
+        });
+
+        binding.achievement.setOnClickListener(view -> {
+            showAchievements();
+        });
+
+        binding.leaderboard.setOnClickListener(view -> {
+            showLeaderboard();
+        });
+
 
         PlayGamesSdk.initialize(this);
 
+        checkUserSignIn();
         checkLocationPermission();
-
-
-        main_tts = new ttsModule(this, Locale.US);
-        main_stt = new sttModule(this, Locale.US);
     }
+
+    private void checkUserSignIn() {
+        GamesSignInClient gamesSignInClient = PlayGames.getGamesSignInClient(this);
+        gamesSignInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask -> {
+            boolean isAuthenticated =
+                    (isAuthenticatedTask.isSuccessful() &&
+                            isAuthenticatedTask.getResult().isAuthenticated());
+
+            if (isAuthenticated) {
+                // Continue with Play Games Services
+                log.d("is Authenticated");
+            } else {
+                log.d("is not authenticated ");
+            }
+        });
+        PlayGames.getPlayersClient(this).getCurrentPlayer().
+                addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                log.d(task.getResult().getDisplayName() + " Welcome!");
+                            }
+                        }
+                );
+    }
+
+
+    private void showAchievements() {
+        PlayGames.getAchievementsClient(this)
+                .getAchievementsIntent()
+                .addOnSuccessListener(intent -> startActivityForResult(intent, RC_ACHIEVEMENT_UI));
+    }
+
+    private void showLeaderboard() {
+        log.d("displayLeaderBoard");
+        try {
+            PlayGames.getLeaderboardsClient(this)
+                    .getLeaderboardIntent(getString(R.string.leaderboard_id))
+                    .addOnSuccessListener(intent -> {
+                        log.d("onSuccess");
+                        startActivityForResult(intent, RC_LEADERBOARD_UI);
+                    })
+                    .addOnFailureListener(e -> log.d("onFailure"));
+        } catch (Exception e) {
+            log.e("Error = " + e.getMessage());
+        }
+    }
+
 }

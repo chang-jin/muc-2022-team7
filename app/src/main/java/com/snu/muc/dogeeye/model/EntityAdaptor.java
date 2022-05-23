@@ -1,7 +1,6 @@
-package com.snu.muc.dogeeye;
+package com.snu.muc.dogeeye.model;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.snu.muc.dogeeye.R;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

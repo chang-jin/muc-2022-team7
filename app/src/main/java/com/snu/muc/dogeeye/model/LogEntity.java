@@ -1,13 +1,10 @@
-package com.snu.muc.dogeeye;
+package com.snu.muc.dogeeye.model;
 
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
-
-import java.util.List;
 
 @Entity(foreignKeys = @ForeignKey(entity = Project.class,
         parentColumns = "id",
