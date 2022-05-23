@@ -74,8 +74,8 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
         }
 
         holder.totalStep.setText(String.valueOf((int) project.getTotalStep()));
-        holder.totalDistance.setText(decimalFormat.format(project.getTotalDistance()));
-        holder.maxRange.setText((decimalFormat.format(project.getRange())));
+        holder.totalDistance.setText(decimalFormat.format(project.getStart2EndDistance()));
+        holder.maxRange.setText((decimalFormat.format(project.getStart2MaxDistance())));
     }
 
     @Override

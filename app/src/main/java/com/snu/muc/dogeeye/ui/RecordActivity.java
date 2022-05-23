@@ -243,9 +243,10 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
             Project newProject = new Project();
             newProject.copyProject(project);
             newProject.setEndTime(endTime);
-            newProject.setTotalDistance(totalDistance);
-            newProject.setRange(maxDistance);
+            newProject.setStart2EndDistance(totalDistance);
+            newProject.setStart2MaxDistance(maxDistance);
             newProject.setAddress(landMark);
+            newProject.setEveryMovingDistance(movingDistanceSum);
             try {
                 newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
             }
@@ -285,8 +286,14 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     pDao.addLog(lg);
 
                     Location prevLoc = new Location("prevLoc");
-                    prevLoc.setLatitude(prevLatitude);
-                    prevLoc.setLongitude(prevLongitude);
+                    if(prevLatitude == 0 || prevLongitude == 0){
+                        prevLoc.setLatitude(curLatitude);
+                        prevLoc.setLongitude(curLongitude);
+                    }
+                    else{
+                        prevLoc.setLatitude(prevLatitude);
+                        prevLoc.setLongitude(prevLongitude);
+                    }
 
                     Location curLoc = new Location("curLoc");
                     curLoc.setLatitude(curLatitude);
@@ -304,6 +311,27 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 }
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //start recThread
+        localStep = 0;
+        movingDistanceSum = 0;
+        Project proj = new Project();
+        long mNow = System.currentTimeMillis();
+        Date mDate = new Date(mNow);
+        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        proj.setStartTime(mFormat.format(mDate));
+        pDao.addProject(proj);
+        curProject = pDao.getAllProjects().size();
+        recoding = true;
+        rThread = new recThread();
+        rThread.start();
+        Toast.makeText(this,"recThread Start!",Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -357,23 +385,6 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         }
 
         g = new Geocoder(this);
-
-
-        //start recThread
-        localStep = 0;
-        movingDistanceSum = 0;
-        Project proj = new Project();
-        long mNow = System.currentTimeMillis();
-        Date mDate = new Date(mNow);
-        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        proj.setStartTime(mFormat.format(mDate));
-        pDao.addProject(proj);
-        curProject = pDao.getAllProjects().size();
-        recoding = true;
-        rThread = new recThread();
-        rThread.start();
-
-
 
 
     }
