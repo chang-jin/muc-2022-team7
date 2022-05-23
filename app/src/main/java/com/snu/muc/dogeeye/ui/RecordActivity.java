@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +46,7 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.model.EntityAdaptor;
 import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.Project;
@@ -61,256 +63,75 @@ import java.util.List;
 
 public class RecordActivity extends AppCompatActivity implements SensorEventListener {
 
-    private static final String TAG = RecordActivity.class.getSimpleName();
-
-    private static final int GPS_UTIL_LOCATION_RESOLUTION_REQUEST_CODE = 101;
-
-    public static final int DEFAULT_LOCATION_REQUEST_PRIORITY = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-    public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 20000L;
-    public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 10000L;
-
-    private ActivityRecordBinding binding;
-
-    private ArrayList<Project> projectList;
-    private TextView stepView;
-    private TextView locView;
-    private SensorManager sensorManager;
-    private Sensor stepCountSensor;
-    private Sensor stepDetectorSensor;
     private Geocoder g;
     private ProjectDao pDao;
     private ProjectDB pdb;
-    recThread rthread;
-    Button recButton;
-    boolean recoding = false;
     int curProject = 0;
-    float globalStep;
-    float localStep;
-    private double longitude, latitude;
-    List<LogEntity> logs;
-    private String landMark = "";
-    private String endTime;
-    private float maxDistance;
-    private float totalDistance;
-    private Location startLoc, endLoc, midLoc;
-    EntityAdaptor entityAdaptor;
-    private PlacesClient placesClient;
 
+    Boolean recoding = false;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    //UI components
+    Button finish;
+    Button steps;
+    Button distance;
+
+    //service thread
+    Thread rThread, uThread;
+
+    //services
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
 
+    //service flag
+    public static final int DEFAULT_LOCATION_REQUEST_PRIORITY = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+    public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 10000L; // loc interval : 10s
+    public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 5000L; // loc fast interval : 5s
+    private static final int GPS_UTIL_LOCATION_RESOLUTION_REQUEST_CODE = 101;
+
+
+    //for step seensors
+    private SensorManager sensorManager;
+    private Sensor stepCountSensor;
+    private Sensor stepDetectorSensor;
+
+
+    //updateThread global values
+    List<LogEntity> logs;
+    private float maxDistance, totalDistance;
+    private String landMark="",endTime;
+    private Location startLoc, endLoc, midLoc;
+
+    //recThread global values
+    private double curLongitude, curLatitude;
+    private double prevLongitude, prevLatitude;
+    private float globalStep, localStep;
+    private float movingDistanceSum;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        binding = ActivityRecordBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-
-        if (stepCountSensor == null) {
-//            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
-        } else {
-            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            globalStep = sensorEvent.values[0];
         }
-
-        if (stepDetectorSensor == null) {
-//            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
-        } else {
-            sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        }
-
-        g = new Geocoder(this);
-
-        stepView = binding.textView;
-        locView = binding.textView2;
-        recButton = binding.button;
-
-        recButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (recoding) {
-                    recoding = false;
-                    updateThread uthread = new updateThread();
-                    uthread.start();
-                    try {
-                        uthread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    entityAdaptor.notifyDataSetChanged();
-//                    Toast.makeText(getContext(),"Recording End",Toast.LENGTH_SHORT).show();
-                } else {
-                    localStep = 0;
-                    Project proj = new Project();
-                    long mNow = System.currentTimeMillis();
-                    Date mDate = new Date(mNow);
-                    SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                    proj.setStartTime(mFormat.format(mDate));
-
-                    pDao.addProject(proj);
-                    curProject = pDao.getAllProjects().size();
-
-//                    Toast.makeText(getContext(),"Recording Start",Toast.LENGTH_SHORT).show();
-
-                    recoding = true;
-
-                    rthread = new recThread();
-                    rthread.start();
-                }
-            }
-        });
-
-        checkLocationSetting();
-
-        pdb = ProjectDB.getProjectDB(this);
-
-        pDao = pdb.projectDao();
-        projectList = (ArrayList<Project>) pDao.getAllProjects();
-
-        RecyclerView recyclerView = binding.rv;
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        entityAdaptor = new EntityAdaptor(projectList);
-        recyclerView.setAdapter(entityAdaptor);
-
-
-        // Construct a PlacesClient
-        Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
-        placesClient = Places.createClient(this);
-        checkCurrentPlace();
-    }
-
-    private class updateThread extends Thread {
-        @Override
-        public void run() {
-            Log.d("uThread", "Start");
-            logs = pDao.getProjectLog(curProject);
-            Project project = pDao.getProjectsByID(curProject);
-
-            maxDistance = 0;
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            for (int i = 0; i < logs.size(); ++i) {
-                String lm = "";
-                double startLo, startLa;
-                LogEntity logEntity = logs.get(i);
-
-
-                Log.d("uThread", "working...");
-                List<Address> address;
-                try {
-                    address = g.getFromLocation(logEntity.getLa(), logEntity.getLo(), 10);
-
-                    if (address != null) {
-                        if (address.size() == 0) {
-                            Log.d("주소찾기 오류", "주소찾기 오류");
-                        } else {
-                            Log.d("찾은 주소", address.get(0).getFeatureName());
-                        }
-                    }
-                    lm = address.get(0).getFeatureName();
-                    LogEntity newLog = new LogEntity();
-                    newLog.copyEntity(logEntity);
-                    newLog.setLocName(lm);
-                    pDao.updLog(newLog);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if (i == 0) {
-                    landMark += "_" + lm;
-                    startLoc = new Location("start");
-                    startLoc.setLatitude(logEntity.getLa());
-                    startLoc.setLongitude(logEntity.getLo());
-                } else if (i == logs.size() - 1) {
-                    endTime = logEntity.getLogTime();
-                    landMark += "_" + lm;
-                    endLoc = new Location("end");
-                    endLoc.setLatitude(logEntity.getLa());
-                    endLoc.setLongitude(logEntity.getLo());
-                    totalDistance = startLoc.distanceTo(endLoc);
-                } else {
-                    midLoc = new Location("mid");
-                    midLoc.setLatitude(logEntity.getLa());
-                    midLoc.setLongitude(logEntity.getLo());
-                    float tmp = startLoc.distanceTo(midLoc);
-                    if (tmp > maxDistance)
-                        maxDistance = tmp;
-                }
-            }
-
-            Project newProject = new Project();
-            newProject.copyProject(project);
-            newProject.setEndTime(endTime);
-            newProject.setTotalDistance(totalDistance);
-            newProject.setRange(maxDistance);
-            newProject.setAddress(landMark);
-            try {
-                newProject.setTotalStep(logs.get(logs.size() - 1).getLocalStep());
-            } catch (Exception e) {
-                newProject.setTotalStep(1.0f);
-            }
-
-
-            pDao.updProject(newProject);
-
-            projectList = (ArrayList<Project>) pDao.getAllProjects();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            entityAdaptor.setLogList(projectList);
+        else if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
+            localStep += sensorEvent.values[0];
         }
     }
 
-    private class recThread extends Thread {
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (recoding) {
-                    LogEntity lg = new LogEntity();
-                    long mNow = System.currentTimeMillis();
-                    Date mDate = new Date(mNow);
-                    SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
 
-                    lg.setPID(curProject);
-                    lg.setLa(latitude);
-                    lg.setLo(longitude);
-                    lg.setGlobalStep(globalStep);
-                    lg.setLocalStep(localStep);
-                    lg.setLogTime(mFormat.format(mDate));
-
-                    pDao.addLog(lg);
-                } else {
-                    break;
-                }
-            }
-        }
     }
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            longitude = locationResult.getLastLocation().getLongitude();
-            latitude = locationResult.getLastLocation().getLatitude();
-            locView.setText(longitude + ", " + latitude);
-
-//            Toast.makeText(getContext(),"LOC is called!", Toast.LENGTH_SHORT).show();
+            prevLatitude = curLatitude;
+            prevLongitude = curLongitude;
+            curLongitude = locationResult.getLastLocation().getLongitude();
+            curLatitude = locationResult.getLastLocation().getLatitude();
         }
     };
 
@@ -352,49 +173,208 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 });
     }
 
-    private void checkCurrentPlace() {
-        Log.d(TAG, "checkCurrentPlace");
-        // Use fields to define the data types to return.
-        List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
+    private class updateThread extends Thread{
+        @Override
+        public void run() {
+            Log.d("uThread","Start");
+            logs = pDao.getProjectLog(curProject);
+            Project project = pDao.getProjectsByID(curProject);
 
-        // Use the builder to create a FindCurrentPlaceRequest.
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+            maxDistance=0;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        // Call findCurrentPlace and handle the response (first check that the user has granted permission).
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    FindCurrentPlaceResponse response = task.getResult();
-                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %f",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
+            for(int i = 0 ; i < logs.size() ; ++i){
+                String entityLocationName="";
+//                double startLo, startLa;
+                LogEntity logEntity=logs.get(i);
+
+
+                Log.d("uThread","working...");
+                List<Address> address;
+                try {
+                    address = g.getFromLocation(logEntity.getLa(),logEntity.getLo(),10);
+
+                    if(address!=null) {
+                        if (address.size() == 0) {
+                            Log.d("주소찾기 오류","주소찾기 오류");
+                        } else {
+                            Log.d("찾은 주소", address.get(0).getFeatureName());
+                            entityLocationName = address.get(0).getFeatureName();
+                            LogEntity newLog = new LogEntity();
+                            newLog.copyEntity(logEntity);
+                            newLog.setLocName(entityLocationName);
+                            pDao.updLog(newLog);
+                        }
                     }
-                } else {
-                    Exception exception = task.getException();
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
+
+                if(i == 0){
+                    landMark+="_"+entityLocationName;
+                    startLoc = new Location("start");
+                    startLoc.setLatitude(logEntity.getLa());
+                    startLoc.setLongitude(logEntity.getLo());
+                }
+                else if(i == logs.size() -1){
+                    endTime = logEntity.getLogTime();
+                    landMark+="_"+entityLocationName;
+                    endLoc = new Location("end");
+                    endLoc.setLatitude(logEntity.getLa());
+                    endLoc.setLongitude(logEntity.getLo());
+                    totalDistance = startLoc.distanceTo(endLoc);
+                }
+                else
+                {
+                    midLoc = new Location("mid");
+                    midLoc.setLatitude(logEntity.getLa());
+                    midLoc.setLongitude(logEntity.getLo());
+                    float tmp = startLoc.distanceTo(midLoc);
+                    if(tmp > maxDistance)
+                        maxDistance = tmp;
+                }
+            }
+
+            Project newProject = new Project();
+            newProject.copyProject(project);
+            newProject.setEndTime(endTime);
+            newProject.setTotalDistance(totalDistance);
+            newProject.setRange(maxDistance);
+            newProject.setAddress(landMark);
+            try {
+                newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
+            }
+            catch (Exception e){
+                newProject.setTotalStep(1.0f);
+            }
+            pDao.updProject(newProject);
+        }
+    }
+
+    private class recThread extends Thread{
+        @Override
+        public void run(){
+            while (true) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (recoding) {
+
+                    //pass initial wrong values
+                    if(curLatitude == 0 || curLongitude == 0)
+                        continue;
+
+                    LogEntity lg = new LogEntity();
+                    long mNow = System.currentTimeMillis();
+                    Date mDate = new Date(mNow);
+                    SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                    lg.setPID(curProject);
+                    lg.setLa(curLatitude);
+                    lg.setLo(curLongitude);
+                    lg.setGlobalStep(globalStep);
+                    lg.setLocalStep(localStep);
+                    lg.setLogTime(mFormat.format(mDate));
+                    pDao.addLog(lg);
+
+                    Location prevLoc = new Location("prevLoc");
+                    prevLoc.setLatitude(prevLatitude);
+                    prevLoc.setLongitude(prevLongitude);
+
+                    Location curLoc = new Location("curLoc");
+                    curLoc.setLatitude(curLatitude);
+                    curLoc.setLongitude(curLongitude);
+
+                    movingDistanceSum += prevLoc.distanceTo(curLoc);
+
+                    steps.setText( localStep + "Steps");
+                    distance.setText(movingDistanceSum + "m");
+
+                }
+                else
+                {
+                    return;
+                }
+            }
         }
     }
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            globalStep = sensorEvent.values[0];
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_record);
 
-            stepView.setText("Step : " + globalStep);
-        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            localStep += sensorEvent.values[0];
+        finish = findViewById(R.id.finish);
+        steps = findViewById(R.id.totalStep);
+        distance = findViewById(R.id.totalDistance);
+        finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),"stopThread",Toast.LENGTH_LONG).show();
+                recoding = false;
+                uThread = new updateThread();
+                uThread.start();
+                try {
+                    uThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        //get DB
+        pdb = ProjectDB.getProjectDB(this);
+        pDao = pdb.projectDao();
+
+        // start getting GPS
+        checkLocationSetting();
+
+        //start getting step#
+        sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
+        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
+        if (stepCountSensor == null) {
+//            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
         }
-    }
+        else{
+            sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
+        if (stepDetectorSensor == null) {
+//            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            sensorManager.registerListener(this,stepDetectorSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        }
+
+        g = new Geocoder(this);
+
+
+        //start recThread
+        localStep = 0;
+        movingDistanceSum = 0;
+        Project proj = new Project();
+        long mNow = System.currentTimeMillis();
+        Date mDate = new Date(mNow);
+        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        proj.setStartTime(mFormat.format(mDate));
+        pDao.addProject(proj);
+        curProject = pDao.getAllProjects().size();
+        recoding = true;
+        rThread = new recThread();
+        rThread.start();
+
+
+
 
     }
 }

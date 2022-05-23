@@ -6,50 +6,92 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <Button
+        android:id="@+id/takePhoto"
+        android:layout_width="336dp"
+        android:layout_height="111dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="#DD1B56"
+        android:text="Take a Photo"
+        app:layout_constraintBottom_toTopOf="@+id/takeSelfie"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+    <Button
+        android:id="@+id/totalDistance"
+        android:layout_width="335dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="72dp"
+        android:backgroundTint="#EFF0F7"
+        android:clickable="false"
+        android:text="# KM"
+        android:textColor="#1A1A1A"
+        app:layout_constraintBottom_toTopOf="@+id/takePhoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/takeSelfie"
+        android:layout_width="336dp"
+        android:layout_height="111dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#FFB000"
+        android:text="Take a selfie"
+        app:layout_constraintBottom_toTopOf="@+id/finish"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center_vertical"
-                android:layout_weight="7">
+    <Button
+        android:id="@+id/finish"
+        android:layout_width="336dp"
+        android:layout_height="111dp"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="#648FFF"
+        android:text="Finish Walk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Step" />
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="138dp"
+        android:layout_height="24dp"
+        android:text="Current Total Steps"
+        android:textColor="#1A1A1A"
+        app:layout_constraintBottom_toTopOf="@+id/totalStep"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Loc" />
-            </LinearLayout>
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Total Walk Distance"
+        android:textColor="#1A1A1A"
+        app:layout_constraintBottom_toTopOf="@+id/totalDistance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.159"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/totalStep"
+        app:layout_constraintVertical_bias="1.0" />
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Button" />
-        </LinearLayout>
+    <Button
+        android:id="@+id/totalStep"
+        android:layout_width="335dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="#EFF0F7"
+        android:clickable="false"
+        android:text="# Steps"
+        android:textColor="#1A1A1A"
+        app:layout_constraintBottom_toTopOf="@+id/totalDistance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
