@@ -3,6 +3,7 @@ package com.snu.muc.dogeeye.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -354,9 +355,10 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
-                bottomSheet.show(getSupportFragmentManager(),"recording end");
+                Intent intent = new Intent(RecordActivity.this, FinishActivity.class);
+                startActivity(intent);
+//                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
+//                bottomSheet.show(getSupportFragmentManager(),"recording end");
             }
         });
 
