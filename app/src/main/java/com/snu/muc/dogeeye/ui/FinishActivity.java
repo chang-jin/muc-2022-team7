@@ -18,6 +18,7 @@ import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.QuestChecker;
+import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
@@ -79,5 +80,35 @@ public class FinishActivity extends AppCompatActivity {
         }
 
         // TODO : Add sharing feature
+
+        // Daily Summary
+        speakDailySummary((int) current.getTotalStep(), current.getEveryMovingDistance(), 0, achieved.size());
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void speakDailySummary(int steps, float distance, int photoSize, int questSize) {
+        TextSpeechModule module = TextSpeechModule.getInstance();
+
+        StringBuilder sb = new StringBuilder();
+        // 인사
+        sb.append("Congratulations!");
+
+        // 정보 1. 오늘 총 걸음 수
+        sb.append(String.format("Today, you have walked %d steps in total.", steps));
+
+        // 정보 2. 오늘 총 걸은 거리
+        sb.append(String.format("And, you have walked a total distance of %s kilometers today.", distance));
+
+        // 정보 3. 오늘 찍은 사진
+        if (photoSize != 0) {
+            sb.append(String.format("And, you took a total of %d pictures today.", photoSize));
+        }
+
+        // 정보 4. 오늘 획득한 업적
+        if (questSize != 0) {
+            sb.append(String.format("And, you have achieved a total of %d achievements today.", questSize));
+        }
+
+        module.textToSpeech(sb.toString());
     }
 }

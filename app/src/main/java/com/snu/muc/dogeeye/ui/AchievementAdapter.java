@@ -44,7 +44,6 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         return mData.size();
     }
 
-
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleView;
