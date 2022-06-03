@@ -167,5 +167,4 @@ public class MainActivity extends AppCompatActivity {
             log.e("Error = " + e.getMessage());
         }
     }
-
 }

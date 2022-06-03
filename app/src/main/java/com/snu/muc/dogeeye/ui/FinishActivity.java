@@ -20,6 +20,8 @@ public class FinishActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finish);
+        Intent myIntent = getIntent();
+        int currentProjectId = myIntent.getIntExtra("currentProjectId", 0);
 
         finish = findViewById(R.id.finish);
         finish.setOnClickListener(view -> {
@@ -27,7 +29,7 @@ public class FinishActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // TODO : Get current id from the intent
-        mQuestChecker = new QuestChecker(this, 0);
+        mQuestChecker = new QuestChecker(this, currentProjectId);
+        mQuestChecker.getNewlyAchievedQuests();
     }
 }

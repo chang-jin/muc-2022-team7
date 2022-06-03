@@ -22,6 +22,9 @@ public interface ProjectDao {
     @Query("select * from Project")
     List<Project> getAllProjects();
 
+    @Query("select * from Project order by startTime desc")
+    List<Project> getAllProjectsOrderedByStartTime();
+
     @Query("select * from Project where id = :id")
     Project getProjectsByID(int id);
 
