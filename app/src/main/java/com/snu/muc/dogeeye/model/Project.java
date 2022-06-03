@@ -17,6 +17,12 @@ public class Project {
 
     private float totalStep;
 
+    private float start2EndDistance;
+
+    private float everyMovingDistance;
+
+    private float start2MaxDistance;
+
     public int getId() {
         return id;
     }
@@ -81,20 +87,10 @@ public class Project {
         this.start2MaxDistance = start2MaxDistance;
     }
 
-    private float start2EndDistance;
-
-    private float everyMovingDistance;
-
-    private float start2MaxDistance;
-
-
-
     public void copyProject(Project project)
     {
         this.id = project.getId();
         this.startTime = project.getStartTime();
     }
-
-
 }
 

@@ -339,6 +339,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     e.printStackTrace();
                 }
                 Intent intent = new Intent(RecordActivity.this, FinishActivity.class);
+                // TODO : Add current project ID to intent
                 startActivity(intent);
 //                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
 //                bottomSheet.show(getSupportFragmentManager(),"recording end");
