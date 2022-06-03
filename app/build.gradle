@@ -47,7 +47,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation "com.google.android.gms:play-services-games-v2:+"
-    implementation 'androidx.camera:camera-camera2:1.1.0-beta02'
+    implementation 'androidx.cmera:camera-camera2:1.1.0-beta02'
     implementation 'androidx.camera:camera-view:1.1.0-beta02'
     implementation 'androidx.camera:camera-lifecycle:1.1.0-beta02'
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
@@ -64,6 +64,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'com.google.android.material:material:1.6.0'
-
-    implementation 'androidx.cardview:cardview:1.0.0'
 }
