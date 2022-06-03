@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye.model;
+package com.snu.muc.dogeeye.ui.logs;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snu.muc.dogeeye.R;
+import com.snu.muc.dogeeye.model.Project;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

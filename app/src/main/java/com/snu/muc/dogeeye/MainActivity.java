@@ -20,6 +20,7 @@ import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 import com.snu.muc.dogeeye.ui.RecordActivity;
+import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
 import java.util.Locale;
 
@@ -109,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
 
         binding.leaderboard.setOnClickListener(view -> {
             showLeaderboard();
+        });
+
+        binding.logs.setOnClickListener(view->{
+            Intent intent = new Intent(MainActivity.this, logsActivity.class);
+            startActivity(intent);
         });
 
 

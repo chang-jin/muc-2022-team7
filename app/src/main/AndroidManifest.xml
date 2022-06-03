@@ -26,6 +26,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DogeEye">
         <activity
+            android:name=".ui.logs.logsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.FinishActivity"
             android:exported="false" />
 

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingTop="?attr/actionBarSize">
+
 
     <Button
         android:id="@+id/start_recording"
@@ -15,10 +18,7 @@
         android:text="Start new walk"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:backgroundTint="@null" />
 
     <Button
         android:id="@+id/gallery"
@@ -29,10 +29,7 @@
         android:text="Gallery"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/start_recording" />
+        app:backgroundTint="@null" />
 
     <Button
         android:id="@+id/achievement"
@@ -43,10 +40,7 @@
         android:text="Achievement"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gallery" />
+        app:backgroundTint="@null" />
 
     <Button
         android:id="@+id/leaderboard"
@@ -57,8 +51,17 @@
         android:text="Leaderboard"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:backgroundTint="@null" />
+
+    <Button
+        android:id="@+id/logs"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:background="#3EB489"
+        android:text="Logs"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:backgroundTint="@null" />
+
+</LinearLayout>
