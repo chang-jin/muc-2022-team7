@@ -49,6 +49,7 @@ public class FinishActivity extends AppCompatActivity {
         finish = findViewById(R.id.finish);
         finish.setOnClickListener(view -> {
             Intent intent = new Intent(FinishActivity.this, MainActivity.class);
+            TextSpeechModule.getInstance().stopTTS();
             startActivity(intent);
         });
 
