@@ -3,9 +3,11 @@ package com.snu.muc.dogeeye.common;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 
+import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
+import com.snu.muc.dogeeye.model.Quest;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -36,46 +38,54 @@ public class QuestChecker {
         projectDao = projectDb.projectDao();
     }
 
-    public List<Integer> getNewlyAchievedQuests() {
-        List<Integer> ret = new ArrayList();
+    public List<Quest> getNewlyAchievedQuests() {
+        List<Quest> ret = new ArrayList();
 
         ret.addAll(checkStreakQuests());
 
         return ret;
     }
 
-    private List<Integer> checkStreakQuests() {
-        List<Integer> streakQuests = new ArrayList();
+    private List<Quest> checkStreakQuests() {
+        List<Quest> streakQuests = new ArrayList();
         Project current = projectDao.getProjectsByID(currentProjectId);
         List<Project> projects = projectDao.getAllProjectsOrderedByStartTime();
 
-        // 2. check 3x streak, 5x streak, 7x streak
+        // check 3x streak, 5x streak, 7x streak
         int maxDayStreak = getDaysStreak(current, projects);
         if (maxDayStreak >= 3) {
-            streakQuests.add(0);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_3x_streak),
+                    "3 Days streak", "Run 3 or more times in a week"));
+            log.d("Achieved = achievement_3x_streak");
         }
         if (maxDayStreak >= 5) {
-            streakQuests.add(1);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_5x_streak),
+                    "5 Days streak", "Run 5 or more times in a week"));
+            log.d("Achieved = achievement_5x_streak");
         }
         if (maxDayStreak >= 7) {
-            streakQuests.add(2);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_7x_streak),
+                    "7 Days streak", "Run 7 or more times in a week"));
+            log.d("Achieved = achievement_7x_streak");
         }
 
-        // 3. check 3-week streak, 4-week streak, 5-week streak
+        // check 3-week streak, 4-week streak, 5-week streak
         int maxWeekStreak = getWeeksStreak(current, projects);
         if (maxWeekStreak >= 3) {
-            streakQuests.add(3);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_3_week_streak),
+                    "3 Weeks streak", "Run 3 weeks in a row"));
+            log.d("Achieved = achievement_3_week_streak");
         }
         if (maxWeekStreak >= 4) {
-            streakQuests.add(4);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_4_week_streak),
+                    "4 Weeks streak", "Run 4 weeks in a row"));
+            log.d("Achieved = achievement_4_week_streak");
         }
         if (maxWeekStreak >= 5) {
-            streakQuests.add(5);
+            streakQuests.add(new Quest(mContext.getString(R.string.achievement_5_week_streak),
+                    "5 Weeks streak", "Run 5 weeks in a row"));
+            log.d("Achieved = achievement_5_week_streak");
         }
-
-        // 4. Remove already achieved ones
-
-        // 5. return the list
         return streakQuests;
     }
 
