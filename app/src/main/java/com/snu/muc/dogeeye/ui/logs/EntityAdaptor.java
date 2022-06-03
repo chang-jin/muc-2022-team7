@@ -20,14 +20,6 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
     private DecimalFormat decimalFormat = new DecimalFormat("#.##m");
     private ArrayList<Project> mData = null;
 
-    public EntityAdaptor(ArrayList<Project> list){
-        mData = list;
-    }
-
-    public void setLogList(ArrayList<Project> list){
-        mData = list;
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView projectNum;
         TextView startTime;
@@ -49,6 +41,13 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
         }
     }
 
+    public EntityAdaptor(ArrayList<Project> list){
+        mData = list;
+    }
+
+    public void setLogList(ArrayList<Project> list){
+        mData = list;
+    }
     @NonNull
     @Override
     public EntityAdaptor.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -40,8 +41,6 @@ public class logsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(logsActivity.this, MainActivity.class);
                 startActivity(intent);
-
-                Toast.makeText(getApplicationContext(),"BACK clicked!",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -52,6 +51,13 @@ public class logsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL, false));
 
         projectList = (ArrayList<Project>) pDao.getAllProjects();
+
+        ArrayList<logEntity> dateAddedProject = logEntity.getEntityList(projectList);
+
+        for(int i = 0 ; i < dateAddedProject.size() ; ++i)
+        {
+            Log.d("revised", dateAddedProject.get(i).getType() +"__"+dateAddedProject.get(i).getDate());
+        }
 
         adapter = new EntityAdaptor(projectList);
 
