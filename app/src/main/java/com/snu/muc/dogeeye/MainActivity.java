@@ -19,6 +19,8 @@ import com.google.android.gms.games.PlayGamesSdk;
 import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
+import com.snu.muc.dogeeye.ui.GalleryActivity;
+import com.snu.muc.dogeeye.ui.PhotoActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
 
 import java.util.Locale;
@@ -41,8 +43,13 @@ public class MainActivity extends AppCompatActivity {
         int accessActivity = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION);
         int accessCamera = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
 
-        if (accessLocation == PackageManager.PERMISSION_DENIED || accessActivity == PackageManager.PERMISSION_DENIED || accessCamera == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACTIVITY_RECOGNITION,Manifest.permission.INTERNET,Manifest.permission.CAMERA}, GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE);
+        if (accessLocation == PackageManager.PERMISSION_DENIED ||
+            accessActivity == PackageManager.PERMISSION_DENIED ||
+            accessCamera == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACTIVITY_RECOGNITION,
+                    Manifest.permission.INTERNET,Manifest.permission.CAMERA
+            }, GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -99,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.gallery.setOnClickListener(view -> {
             // TODO : Change to gallery
-            Intent intent = new Intent(MainActivity.this, RecordActivity.class);
+            Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
             startActivity(intent);
         });
 

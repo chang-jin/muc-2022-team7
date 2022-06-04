@@ -3,6 +3,7 @@ package com.snu.muc.dogeeye.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -75,6 +76,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button finish;
     Button steps;
     Button distance;
+    Button takePhotoButton;
+    Button takeSelfieButton;
 
     //service thread
     Thread rThread, uThread;
@@ -342,6 +345,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         finish = findViewById(R.id.finish);
         steps = findViewById(R.id.totalStep);
         distance = findViewById(R.id.totalDistance);
+        takePhotoButton = findViewById(R.id.takePhoto);
+        takeSelfieButton = findViewById(R.id.takeSelfie);
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -357,6 +362,24 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
                 recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
                 bottomSheet.show(getSupportFragmentManager(),"recording end");
+            }
+        });
+
+        takePhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent takePhotoIntent = new Intent(RecordActivity.this, PhotoActivity.class);
+                takePhotoIntent.putExtra("facing", 1);
+                startActivity(takePhotoIntent);
+            }
+        });
+
+        takeSelfieButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent takeSelfieIntent = new Intent(RecordActivity.this, PhotoActivity.class);
+                takeSelfieIntent.putExtra("facing", 0);
+                startActivity(takeSelfieIntent);
             }
         });
 

@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ImageCaptioner {
+    // To be singleton
+    private static ImageCaptioner imageCaptioner = null;
+
     public static final String TAG = "ImageCaptionerWithSupport";
     private static String[] WORD_MAP;
 
@@ -61,6 +64,14 @@ public abstract class ImageCaptioner {
     private TensorImage inputImageBuffer;
     private int[][] outputCaptionIds = new int[22][1];
     Map<Integer, Object> outputBuffers = new HashMap<>();
+
+    public static ImageCaptioner getInstance(Activity activity, Model model, Device device, int numThreads)
+            throws IOException {
+        if (imageCaptioner == null) {
+            imageCaptioner = ImageCaptioner.create(activity, model, device, numThreads);
+        }
+        return imageCaptioner;
+    }
 
     public static ImageCaptioner create(Activity activity, Model model, Device device, int numThreads)
             throws IOException {
@@ -135,7 +146,11 @@ public abstract class ImageCaptioner {
 
         String resultString = "";
         for (int i = 0; i < 22; i++) {
-            resultString += WORD_MAP[outputCaptionIds[i][0]] + " ";
+            String word = WORD_MAP[outputCaptionIds[i][0]];
+            if (word.equals("</S>")) {
+                break;
+            }
+            resultString += word + " ";
         }
         return resultString;
     }

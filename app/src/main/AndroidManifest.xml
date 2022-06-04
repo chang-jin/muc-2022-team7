@@ -46,6 +46,12 @@
             android:label="RecordActivity">
         </activity>
 
+        <activity
+            android:name=".ui.PhotoActivity"
+            android:exported="true"
+            android:label="PhotoActivity">
+        </activity>
+
     </application>
 
 </manifest>
