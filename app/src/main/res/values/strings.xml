@@ -1,9 +1,11 @@
 <resources>
+    <string name="main_header">DogeWalk</string>
     <string name="app_name">DogeWalk</string>
     <string name="title_home">Home</string>
     <string name="title_photo">Photo</string>
     <string name="title_record">Record</string>
     <string name="title_quest">Quest</string>
+
     <string name="game_services_project_id" translatable="false">601775852778</string>
     <string name="leaderboard_id" translatable="false">CgkI6pmL5cEREAIQAQ</string>
     <string name="maps_api_key">AIzaSyBBzPMiSQlfgcnZkuP_g45oYJS11wmi9Sc</string>
