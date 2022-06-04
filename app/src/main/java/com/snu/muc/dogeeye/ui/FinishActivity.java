@@ -3,13 +3,24 @@ package com.snu.muc.dogeeye.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,12 +35,22 @@ import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.model.Quest;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 public class FinishActivity extends AppCompatActivity {
     private static final Logger log = new Logger();
 
     private Button finish;
+    private Button share;
     private QuestChecker mQuestChecker;
     private ProjectDB projectDb;
     private ProjectDao projectDao;
@@ -80,10 +101,53 @@ public class FinishActivity extends AppCompatActivity {
             achievementContainer.setVisibility(View.GONE);
         }
 
-        // TODO : Add sharing feature
+        share = findViewById(R.id.share);
+        share.setOnClickListener(view -> {
+            shareTheWalk(current);
+        });
 
         // Daily Summary
         speakDailySummary((int) current.getTotalStep(), current.getEveryMovingDistance(), 0, achieved.size());
+    }
+
+    private void shareTheWalk(Project current) {
+        Bitmap imageToShare;
+        // photo.isEmpty()
+        if (true) {
+            Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
+            imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
+        } else {
+            // First picture of the project
+            Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
+            imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
+        }
+        makeShareImage(imageToShare, current);
+
+        // Share the image through
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        imageToShare.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File f = new File(getFilesDir() + File.separator + "temporary_file.jpg");
+        try {
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Uri imageUri = FileProvider.getUriForFile(
+                this,
+                "com.snu.muc.dogeeye.provider",
+                f);
+        share.putExtra(Intent.EXTRA_STREAM, imageUri);
+        Intent chooser = Intent.createChooser(share, "Share Image");
+        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            getApplicationContext().grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        startActivity(chooser);
     }
 
     @SuppressLint("DefaultLocale")
@@ -111,5 +175,27 @@ public class FinishActivity extends AppCompatActivity {
         }
 
         module.textToSpeech(sb.toString());
+    }
+
+    private void makeShareImage(Bitmap image, Project current) {
+        Canvas canvas = new Canvas(image);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateTime start = null;
+        try {
+            start = new DateTime(dateFormat.parse(current.getStartTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Paint paintForText = new Paint();
+        paintForText.setColor(Color.BLACK);
+        paintForText.setTextSize(50);
+        paintForText.setTextAlign(Paint.Align.CENTER);
+
+        canvas.drawText(String.format("%d Steps", (int) current.getTotalStep()), 200.0f, 950.0f, paintForText); // Step
+        canvas.drawText(String.format("%s M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
+        canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
+//        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
     }
 }
