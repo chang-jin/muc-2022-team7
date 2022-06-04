@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_main.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/drawable/button_blue0.xml" value="0.134" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/date_divider.xml" value="0.1889564336372847" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/fragment_record.xml" value="0.25" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/recycler.xml" value="0.33" />
         <entry key="app/src/main/res/layout/achievement_row.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/layout/activity_finish.xml" value="0.1546875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />

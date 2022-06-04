@@ -94,6 +94,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private float globalStep, localStep;
     private float movingDistanceSum;
 
+    final String REGEX = "[0-9]+";
+
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -188,8 +190,14 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                         if (address.size() == 0) {
                             Log.d("주소찾기 오류","주소찾기 오류");
                         } else {
-                            Log.d("찾은 주소", address.get(0).getFeatureName());
+                            Log.d("findAddr", address.get(0).toString());
+
                             entityLocationName = address.get(0).getFeatureName();
+
+                            entityLocationName = entityLocationName.replaceAll("-","");
+                            if(entityLocationName.matches(REGEX))
+                                entityLocationName = address.get(0).getThoroughfare();
+
                             LogEntity newLog = new LogEntity();
                             newLog.copyEntity(logEntity);
                             newLog.setLocName(entityLocationName);

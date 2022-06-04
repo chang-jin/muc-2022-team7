@@ -20,6 +20,7 @@ import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class logsActivity extends AppCompatActivity {
 
@@ -51,7 +52,7 @@ public class logsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL, false));
 
         projectList = (ArrayList<Project>) pDao.getAllProjects();
-
+        Collections.reverse(projectList);
         ArrayList<logEntity> dateAddedProject = logEntity.getEntityList(projectList);
 
         for(int i = 0 ; i < dateAddedProject.size() ; ++i)
@@ -59,7 +60,7 @@ public class logsActivity extends AppCompatActivity {
             Log.d("revised", dateAddedProject.get(i).getType() +"__"+dateAddedProject.get(i).getDate());
         }
 
-        adapter = new EntityAdaptor(projectList);
+        adapter = new EntityAdaptor(dateAddedProject,getApplicationContext());
 
         recyclerView.setAdapter(adapter);
 

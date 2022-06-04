@@ -1,6 +1,7 @@
 package com.snu.muc.dogeeye.ui.logs;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,78 +9,157 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.model.Project;
+import com.snu.muc.dogeeye.model.ProjectDB;
+import com.snu.muc.dogeeye.model.ProjectDao;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder> {
+public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private DecimalFormat decimalFormat = new DecimalFormat("#.##m");
-    private ArrayList<Project> mData = null;
+    private ArrayList<logEntity> mData = null;
+    private ProjectDao pDao;
+    private ProjectDB pdb;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView projectNum;
-        TextView startTime;
-        TextView endTime;
-        TextView address;
-        TextView totalStep;
-        TextView totalDistance;
-        TextView maxRange;
+    public class ViewHolderLog extends ViewHolder {
+        TextView timeStamp;
+        TextView startLoc;
+        TextView endLoc;
+        int pid=0;
 
-        ViewHolder(View itemView) {
+        ViewHolderLog(View itemView) {
             super(itemView) ;
-            projectNum = itemView.findViewById(R.id.pid);
-            startTime = itemView.findViewById(R.id.stime);
-            endTime = itemView.findViewById(R.id.etime);
-            address = itemView.findViewById(R.id.adr);
-            totalStep = itemView.findViewById(R.id.step);
-            totalDistance = itemView.findViewById(R.id.dis);
-            maxRange = itemView.findViewById(R.id.range);
+            timeStamp = itemView.findViewById(R.id.time_stamp);
+            startLoc = itemView.findViewById(R.id.adr_start);
+            endLoc = itemView.findViewById(R.id.adr_end);
+            final boolean[] selected = {false};
+            final String[] prevData = {"",""};
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    int pos = getAbsoluteAdapterPosition();
+
+                    if(selected[0])
+                    {
+                        Log.d("entitySelection", "delete Log " + pos + " [" + pid + "]");
+                        Project project = new Project();
+                        project.setId(pid);
+                        pDao.delProject(project);
+                        mData.remove(pos);
+                        notifyDataSetChanged();
+                    }
+                    else
+                        Log.d("entitySelection","unselected Log "+pos+" [" + pid + "]");
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if(selected[0])
+                    {
+                        selected[0] = false;
+                        startLoc.setText(prevData[0]);
+                        endLoc.setText(prevData[1]);
+                        return true;
+                    }
+                    else
+                    {
+                        selected[0] = true;
+                        prevData[0] = (String) startLoc.getText();
+                        prevData[1] = (String) endLoc.getText();
+                        startLoc.setText("Touch Once Again");
+                        endLoc.setText("To Delete Log");
+                        return true;
+                    }
+
+                }
+            });
         }
     }
 
-    public EntityAdaptor(ArrayList<Project> list){
-        mData = list;
+    public class ViewHolderDiv extends ViewHolder {
+        TextView date;
+
+        ViewHolderDiv(View itemView) {
+            super(itemView) ;
+            date = itemView.findViewById(R.id.date_divider);
+        }
     }
 
-    public void setLogList(ArrayList<Project> list){
+    public EntityAdaptor(ArrayList<logEntity> list, Context context){
+        mData = list;
+        pdb = ProjectDB.getProjectDB(context);
+        pDao = pdb.projectDao();
+    }
+
+    public void setLogList(ArrayList<logEntity> list){
         mData = list;
     }
     @NonNull
     @Override
-    public EntityAdaptor.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View view = inflater.inflate(R.layout.recycler,parent,false);
-        EntityAdaptor.ViewHolder vh = new EntityAdaptor.ViewHolder(view);
+        ViewHolder vh = null;
+
+        if(viewType == 0)
+        {
+            View view = inflater.inflate(R.layout.recycler,parent,false);
+            vh = new EntityAdaptor.ViewHolderLog(view);
+        }
+        else if(viewType == 1)
+        {
+            View view = inflater.inflate(R.layout.date_divider,parent,false);
+            vh = new EntityAdaptor.ViewHolderDiv(view);
+        }
 
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EntityAdaptor.ViewHolder holder, int position) {
-        Project project = mData.get(position);
-        holder.projectNum.setText(String.valueOf(project.getId()));
-        holder.startTime.setText(project.getStartTime());
-        holder.endTime.setText(project.getEndTime());
-        try{
-            String[] tmp = project.getAddress().split("_");
-            holder.address.setText(tmp[1]+"~\n"+tmp[2]);
-        }catch (Exception e){
-            holder.address.setText("Failed Log");
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        logEntity lgEntity = mData.get(position);
+
+        if(lgEntity.getType() == 0)
+        {
+            Project project = lgEntity.getProject();
+            ((ViewHolderLog) holder).pid = project.getId();
+            ((ViewHolderLog) holder).timeStamp.setText(String.valueOf(lgEntity.getStartTimeRev()));
+            try{
+                String[] tmp = project.getAddress().split("_");
+                ((ViewHolderLog) holder).startLoc.setText(tmp[1]);
+                ((ViewHolderLog) holder).endLoc.setText(tmp[2]);
+            }catch (Exception e){
+                ((ViewHolderLog) holder).startLoc.setText("Failed Log");
+                ((ViewHolderLog) holder).endLoc.setText("Failed Log");
+            }
+        }
+        else if(lgEntity.getType() == 1)
+        {
+            ((ViewHolderDiv) holder).date.setText(lgEntity.getDate());
         }
 
-        holder.totalStep.setText(String.valueOf((int) project.getTotalStep()));
-        holder.totalDistance.setText(decimalFormat.format(project.getStart2EndDistance()));
-        holder.maxRange.setText((decimalFormat.format(project.getStart2MaxDistance())));
     }
 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        logEntity tmp = mData.get(position);
+
+        return tmp.getType();
     }
 }

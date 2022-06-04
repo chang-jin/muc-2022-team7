@@ -9,11 +9,13 @@ public class logEntity {
     private int type;
     private Project project;
     private String date;
+    private String startTimeRev;
 
-    logEntity(Project proj,String dateAxis){
+    logEntity(Project proj,String dateAxis, String sTime){
         type = 0;
         project = proj;
         date = dateAxis;
+        startTimeRev = sTime;
     }
 
     logEntity(String dateAxis){
@@ -31,6 +33,10 @@ public class logEntity {
         return date;
     }
 
+    String getStartTimeRev(){return startTimeRev;}
+
+    Project getProject(){return project;}
+
     public static ArrayList<logEntity> getEntityList(ArrayList<Project> allProject)
     {
         ArrayList<logEntity> buf = new ArrayList<>();
@@ -44,7 +50,7 @@ public class logEntity {
             if(!prevTime.equals(times[0]))
                 buf.add(new logEntity(times[0]));
 
-            buf.add(new logEntity(tmp,times[0]));
+            buf.add(new logEntity(tmp,times[0],times[1].split(":")[0]+"\n"+times[1].split(":")[1]));
 
             prevTime = times[0];
         }

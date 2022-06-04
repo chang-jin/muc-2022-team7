@@ -19,8 +19,6 @@ import com.google.android.gms.games.PlayGamesSdk;
 import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
-import com.snu.muc.dogeeye.ui.GalleryActivity;
-import com.snu.muc.dogeeye.ui.PhotoActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
 import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.gallery.setOnClickListener(view -> {
             // TODO : Change to gallery
-            Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
+            Intent intent = new Intent(MainActivity.this, RecordActivity.class);
             startActivity(intent);
         });
 
