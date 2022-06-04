@@ -1,23 +1,29 @@
 package com.snu.muc.dogeeye.ui;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Size;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -26,8 +32,7 @@ import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.ui.photo.ImageCaptioner;
 
-import org.w3c.dom.Text;
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -42,9 +47,13 @@ public class PhotoActivity extends AppCompatActivity {
     private ImageCaptioner imageCaptioner;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private MutableLiveData<String> caption = new MutableLiveData<>();
-    private int imageSizeX;
-    private int imageSizeY;
 
+    private ProcessCameraProvider cameraProvider;
+    private CameraSelector cameraSelector;
+    private ImageAnalysis imageAnalysis;
+    private ImageCapture imageCapture;
+    private Preview preview;
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,18 +64,19 @@ public class PhotoActivity extends AppCompatActivity {
 
         // Prepare camera
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-        CameraSelector cameraSelector = new CameraSelector.Builder()
+        cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(getIntent().getIntExtra("facing", 1))
                 .build();
 
         // Bind preview
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                Preview preview = bindPreview(cameraProvider, cameraSelector);
+                cameraProvider = cameraProviderFuture.get();
+                bindPreview(cameraProvider, cameraSelector);
                 if (getIntent().getIntExtra("facing", 1) == 1) {
-                    bindCaptioning(cameraProvider, cameraSelector, preview);
+                    bindCaptioning(cameraProvider, cameraSelector);
                 }
+                bindCapture(cameraProvider, cameraSelector);
             } catch (ExecutionException | InterruptedException e) {
             }
         }, ContextCompat.getMainExecutor(this));
@@ -84,9 +94,8 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     void bindCaptioning(@NonNull ProcessCameraProvider cameraProvider,
-                        @NonNull CameraSelector cameraSelector,
-                        @NonNull Preview preview) {
-        final ImageAnalysis imageAnalysis =
+                        @NonNull CameraSelector cameraSelector) {
+        imageAnalysis =
                 new ImageAnalysis.Builder()
                         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                         .setTargetResolution(new Size(224, 224))
@@ -97,7 +106,6 @@ public class PhotoActivity extends AppCompatActivity {
             public void analyze(@NonNull ImageProxy image) {
                 final long now = SystemClock.uptimeMillis();
                 // Drop frame if an image has been analyzed less than ANALYSIS_DELAY_MS ms ago
-                Log.d(TAG, String.valueOf(ttsModule.isSpeaking()));
                 if ((ttsModule.isSpeaking()) ||
                         lastAnalysisTime != INVALID_TIME &&
                         (now - lastAnalysisTime < ANALYSIS_DELAY_MS)) {
@@ -127,16 +135,47 @@ public class PhotoActivity extends AppCompatActivity {
                 image.close();
             }
         });
-        cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
     }
 
-    Preview bindPreview(@NonNull ProcessCameraProvider cameraProvider,
-                        @NonNull CameraSelector cameraSelector) {
+    void bindPreview(@NonNull ProcessCameraProvider cameraProvider,
+                     @NonNull CameraSelector cameraSelector) {
         final PreviewView previewView = findViewById(R.id.previewView);
-        Preview preview = new Preview.Builder().build();
+        preview = new Preview.Builder().build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview);
-        return preview;
+    }
+
+    void bindCapture(@NonNull ProcessCameraProvider cameraProvider,
+                     @NonNull CameraSelector cameraSelector) {
+        final Button captureButton = findViewById(R.id.captureButton);
+        imageCapture =
+                new ImageCapture.Builder().build();
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
+
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, String.valueOf(getExternalMediaDirs()[0]));
+                ImageCapture.OutputFileOptions outputFileOptions =
+                        new ImageCapture.OutputFileOptions.Builder(
+                                new File(
+                                        getExternalMediaDirs()[0],
+                                        String.valueOf(System.currentTimeMillis()) + ".jpg")).build();
+                imageCapture.takePicture(outputFileOptions, getMainExecutor(),
+                        new ImageCapture.OnImageSavedCallback() {
+                            @Override
+                            public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
+                                Uri savedUri = outputFileResults.getSavedUri();
+                                // DB save
+                            }
+
+                            @Override
+                            public void onError(@NonNull ImageCaptureException exception) {
+                                Log.e(TAG, "FILE NOT SAVED!!!!");
+                            }
+                        }
+                );
+            }
+        });
     }
 
     void bindText() {

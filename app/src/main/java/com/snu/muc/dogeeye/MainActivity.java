@@ -27,15 +27,12 @@ import com.snu.muc.dogeeye.ui.logs.logsActivity;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_CAMERA_PERMISSION = 1234;
-
     private ActivityMainBinding binding;
     private TextSpeechModule mTTSModule;
 
     private static final Logger log = new Logger();
 
     private static final int GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE = 200;
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_ACHIEVEMENT_UI = 9003;
 
@@ -48,8 +45,12 @@ public class MainActivity extends AppCompatActivity {
             accessActivity == PackageManager.PERMISSION_DENIED ||
             accessCamera == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACTIVITY_RECOGNITION,
-                    Manifest.permission.INTERNET,Manifest.permission.CAMERA
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACTIVITY_RECOGNITION,
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
