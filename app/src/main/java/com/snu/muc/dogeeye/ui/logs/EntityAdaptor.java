@@ -1,4 +1,4 @@
-package com.snu.muc.dogeeye.model;
+package com.snu.muc.dogeeye.ui.logs;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snu.muc.dogeeye.R;
+import com.snu.muc.dogeeye.model.Project;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -18,14 +19,6 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
 
     private DecimalFormat decimalFormat = new DecimalFormat("#.##m");
     private ArrayList<Project> mData = null;
-
-    public EntityAdaptor(ArrayList<Project> list){
-        mData = list;
-    }
-
-    public void setLogList(ArrayList<Project> list){
-        mData = list;
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView projectNum;
@@ -48,6 +41,13 @@ public class EntityAdaptor extends RecyclerView.Adapter<EntityAdaptor.ViewHolder
         }
     }
 
+    public EntityAdaptor(ArrayList<Project> list){
+        mData = list;
+    }
+
+    public void setLogList(ArrayList<Project> list){
+        mData = list;
+    }
     @NonNull
     @Override
     public EntityAdaptor.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

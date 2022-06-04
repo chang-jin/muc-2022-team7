@@ -1,11 +1,9 @@
 package com.snu.muc.dogeeye.ui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -18,14 +16,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -40,25 +34,14 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.snu.muc.dogeeye.MainActivity;
-import com.snu.muc.dogeeye.model.EntityAdaptor;
 import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.R;
-import com.snu.muc.dogeeye.databinding.ActivityRecordBinding;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -359,9 +342,11 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
-                bottomSheet.show(getSupportFragmentManager(),"recording end");
+                Intent intent = new Intent(RecordActivity.this, FinishActivity.class);
+                intent.putExtra("currentProjectId", curProject);
+                startActivity(intent);
+//                recordEndBottomSheet bottomSheet = new recordEndBottomSheet();
+//                bottomSheet.show(getSupportFragmentManager(),"recording end");
             }
         });
 

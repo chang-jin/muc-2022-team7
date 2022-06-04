@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="ibm_skyblue">#648fff</color>
+    <color name="ibm_purple">#785ef0</color>
+    <color name="ibm_magenta">#dc267f</color>
+    <color name="ibm_orange">#fe6100</color>
+    <color name="ibm_yellow">#ffb000</color>
 </resources>
