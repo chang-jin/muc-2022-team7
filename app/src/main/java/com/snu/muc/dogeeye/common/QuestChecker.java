@@ -1,6 +1,9 @@
 package com.snu.muc.dogeeye.common;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 
 import com.snu.muc.dogeeye.R;
@@ -30,12 +33,16 @@ public class QuestChecker {
     private final Context mContext;
     private final ProjectDB projectDb;
     private final ProjectDao projectDao;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
 
     public QuestChecker(Context context, int id) {
         mContext = context;
         currentProjectId = id;
         projectDb = ProjectDB.getProjectDB(context);
         projectDao = projectDb.projectDao();
+        sp = context.getSharedPreferences("Quest", MODE_PRIVATE);
+        editor = sp.edit();
     }
 
     public List<Quest> getNewlyAchievedQuests() {
@@ -86,7 +93,26 @@ public class QuestChecker {
                     "5 Weeks streak", "Run 5 weeks in a row"));
             log.d("Achieved = achievement_5_week_streak");
         }
-        return streakQuests;
+
+        // Check duplication
+        List<Quest> ret = new ArrayList();
+        for (Quest quest : streakQuests) {
+            if (checkQuest(quest.getId())) {
+                continue;
+            }
+            setUnlock(quest.getId());
+            ret.add(quest);
+        }
+        return ret;
+    }
+
+    private boolean checkQuest(String id) {
+         return sp.getBoolean(id, false);
+    }
+
+    private void setUnlock(String id) {
+        editor.putBoolean(id, true);
+        editor.commit();
     }
 
     private int daysBetween(Project origin, Project target) {
