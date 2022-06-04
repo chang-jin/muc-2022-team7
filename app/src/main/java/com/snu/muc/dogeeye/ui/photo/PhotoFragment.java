@@ -180,7 +180,7 @@ public class PhotoFragment extends Fragment {
     }
 
     void bindText() {
-        final TextView textView = binding.textView;
+        final TextView textView = binding.captionView;
         photoViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {

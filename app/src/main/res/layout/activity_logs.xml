@@ -19,6 +19,8 @@
         app:backgroundTint="@null" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="20dp"
         android:id="@+id/rv"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:scrollbars="vertical"

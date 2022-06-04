@@ -13,11 +13,12 @@
 
     <TextView
         android:id="@+id/tvAchievementTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_marginStart="10dp"
         android:layout_gravity="center"
+        android:textAlignment="center"
         android:text="Hello, this is the title"
-        android:textSize="20sp" />
+        android:textSize="30sp" />
 
 </LinearLayout>
