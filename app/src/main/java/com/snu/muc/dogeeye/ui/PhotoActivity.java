@@ -53,7 +53,7 @@ public class PhotoActivity extends AppCompatActivity {
     private ImageAnalysis imageAnalysis;
     private ImageCapture imageCapture;
     private Preview preview;
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +149,11 @@ public class PhotoActivity extends AppCompatActivity {
         final Button captureButton = findViewById(R.id.captureButton);
         imageCapture =
                 new ImageCapture.Builder().build();
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
+        if (getIntent().getIntExtra("facing", 1) == 1) {
+            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
+        } else {
+            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+        }
 
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
