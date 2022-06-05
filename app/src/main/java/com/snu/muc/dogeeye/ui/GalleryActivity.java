@@ -5,13 +5,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,9 +39,6 @@ public class GalleryActivity extends AppCompatActivity {
     private final int NUM_COLUMNS = 2;
     private ProjectDB pdb;
     private ProjectDao pDao;
-    private TableLayout tableLayout;
-    private List<TableRow> tableRows = new ArrayList<>();
-    private List<ImageView> imageViewList = new ArrayList<>();
     private Map<Integer, List<PhotoEntity>> photoEntities;
     private ImageCaptioner imageCaptioner;
     private TextSpeechModule ttsModule;
@@ -64,21 +64,42 @@ public class GalleryActivity extends AppCompatActivity {
         // Get TTS module
         ttsModule = TextSpeechModule.getInstance();
 
-        tableLayout = new TableLayout(this);
+        //
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setDividerPadding(10);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        scrollView.addView(linearLayout);
+        photoEntities = getPhotoEntities();
+
+        // Get sorted projects
+        List<Project> projectList = pDao.getAllProjectsOrderedByStartTime();
+
+        for (Project project : projectList) {
+            List<PhotoEntity> photos = pDao.getPhotoEntities(project.getId());
+            if (photos.size() == 0) {
+                continue;
+            }
+            TextView titleTextView = new TextView(this);
+            titleTextView.setText(
+                    project.getEndTime() + " / " +
+                            "Walk " + String.valueOf(project.getId()));
+            titleTextView.setTextSize(20);
+            linearLayout.addView(titleTextView);
+            linearLayout.addView(getTableLayoutWithPhotos(photos));
+        }
+        setContentView(scrollView);
+    }
+
+    TableLayout getTableLayoutWithPhotos(List<PhotoEntity> photos) {
+        TableLayout tableLayout = new TableLayout(this);
         tableLayout.setLayoutParams(new TableLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        photoEntities = getPhotoEntities();
-        // Calculate how many table rows are needed.
-        // Assume each row has two columns.
-        int totalNumRows = 0;
-        List<PhotoEntity> flattenedPhotoEntities = new ArrayList<>();
-        for (Project project : pDao.getAllProjects()) {
-            totalNumRows += (photoEntities.get(project.getId()).size() + NUM_COLUMNS - 1) / NUM_COLUMNS;
-            flattenedPhotoEntities.addAll(photoEntities.get(project.getId()));
-        }
-        // Add table rows.
-        for (int row = 0; row < totalNumRows; row++) {
+
+        List<TableRow> tableRows = new ArrayList<>();
+        List<ImageView> imageViewList = new ArrayList<>();
+        for (int i = 0; i < (photos.size() + NUM_COLUMNS - 1) / NUM_COLUMNS; i++) {
             TableRow tableRow = new TableRow(this);
             tableRow.setWeightSum(1.0f);
             TableLayout.LayoutParams tableRowParams =
@@ -86,7 +107,7 @@ public class GalleryActivity extends AppCompatActivity {
             tableRowParams.setMargins(30, 30, 30, 30);
             tableRow.setLayoutParams(tableRowParams);
             tableRows.add(tableRow);
-            for (int i = 0; i < NUM_COLUMNS; i++) {
+            for (int j = 0; j < NUM_COLUMNS; j++) {
                 ImageView imageView = new ImageView(this);
                 TableRow.LayoutParams imageViewParams =
                         new TableRow.LayoutParams(
@@ -103,16 +124,14 @@ public class GalleryActivity extends AppCompatActivity {
             }
             tableLayout.addView(tableRow);
         }
-        // Set images
-        for (int i = 0; i < flattenedPhotoEntities.size(); i++) {
+
+        for (int i = 0; i < photos.size(); i++) {
             File imageFile = new File(getExternalMediaDirs()[0],
-                    flattenedPhotoEntities.get(i).getFileName());
-            Log.d(TAG, imageFile.getAbsolutePath());
+                    photos.get(i).getFileName());
             imageViewList.get(i).setImageURI(
                     Uri.fromFile(imageFile));
-
         }
-        setContentView(tableLayout);
+        return tableLayout;
     }
 
     View.OnClickListener getImageViewOnClickListener() {
