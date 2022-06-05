@@ -55,6 +55,7 @@ public class QuestChecker {
         achieved.addAll(checkStepsQuests());
         achieved.addAll(checkLandmarkQuests());
         achieved.addAll(checkExpeditionQuests());
+        achieved.addAll(checkInterestingQuests());
 
         // Check duplication
         List<Quest> ret = new ArrayList();
@@ -66,6 +67,37 @@ public class QuestChecker {
             ret.add(quest);
         }
         return ret;
+    }
+
+    private List<Quest> checkInterestingQuests() {
+        List<Quest> interestingQuests = new ArrayList();
+        List<Project> projects = projectDao.getAllProjectsOrderedByStartTime();
+
+        // Check To the Moon
+        double totalDistance = 0;
+        for (int i = 0; i < projects.size(); i++) {
+            totalDistance += projects.get(i).getEveryMovingDistance();
+            if (totalDistance > 100000.0f) {
+                interestingQuests.add(new Quest(mContext.getString(R.string.achievement_to_the_moon),
+                        "To the Moon", "Traveled 100kms in total"));
+                log.d("Achieved = achievement_to_the_moon");
+            }
+        }
+
+        // Check Photographer
+        if (false) {
+            interestingQuests.add(new Quest(mContext.getString(R.string.achievement_photographer),
+                    "Photographer", "Take 100 Photos"));
+            log.d("Achieved = achievement_photographer");
+        }
+
+        // Check Love Yourself
+        if (false) {
+            interestingQuests.add(new Quest(mContext.getString(R.string.achievement_love_yourself),
+                    "Love Yourself", "Take 100 Selfies"));
+            log.d("Achieved = achievement_love_yourself");
+        }
+        return interestingQuests;
     }
 
     private List<Quest> checkExpeditionQuests() {
