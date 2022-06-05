@@ -295,8 +295,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
                     movingDistanceSum += prevLoc.distanceTo(curLoc);
 
-                    steps.setText( localStep + "Steps");
-                    distance.setText(movingDistanceSum + "m");
+                    steps.setText( Math.round(localStep) + " Steps");
+                    distance.setText(movingDistanceSum + " m");
 
                 }
                 else
