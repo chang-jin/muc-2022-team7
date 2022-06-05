@@ -12,10 +12,54 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="achievement_3x_streak">CgkI6pmL5cEREAIQAw</string>
-    <string name="achievement_5x_streak">CgkI6pmL5cEREAIQBA</string>
-    <string name="achievement_7x_streak">CgkI6pmL5cEREAIQBQ</string>
-    <string name="achievement_3_week_streak">CgkI6pmL5cEREAIQBg</string>
-    <string name="achievement_4_week_streak">CgkI6pmL5cEREAIQBw</string>
-    <string name="achievement_5_week_streak">CgkI6pmL5cEREAIQCA</string>
+    <!--achievement 3x Streak-->
+    <string name="achievement_3x_streak" translatable="false">CgkI6pmL5cEREAIQAw</string>
+    <!--achievement 5x Streak-->
+    <string name="achievement_5x_streak" translatable="false">CgkI6pmL5cEREAIQBA</string>
+    <!--achievement 7x Streak-->
+    <string name="achievement_7x_streak" translatable="false">CgkI6pmL5cEREAIQBQ</string>
+    <!--achievement 3-Week Streak-->
+    <string name="achievement_3week_streak" translatable="false">CgkI6pmL5cEREAIQBg</string>
+    <!--achievement 4-Week Streak-->
+    <string name="achievement_4week_streak" translatable="false">CgkI6pmL5cEREAIQBw</string>
+    <!--achievement 5-Week Streak-->
+    <string name="achievement_5week_streak" translatable="false">CgkI6pmL5cEREAIQCA</string>
+    <!--achievement 10x 10000 Steps-->
+    <string name="achievement_10x_10000_steps" translatable="false">CgkI6pmL5cEREAIQCQ</string>
+    <!--achievement 20x 10000 Steps-->
+    <string name="achievement_20x_10000_steps" translatable="false">CgkI6pmL5cEREAIQCg</string>
+    <!--achievement 30x 10000 Steps-->
+    <string name="achievement_30x_10000_steps" translatable="false">CgkI6pmL5cEREAIQCw</string>
+    <!--achievement Landmark-OLD-->
+    <string name="achievement_landmarkold" translatable="false">CgkI6pmL5cEREAIQDA</string>
+    <!--achievement Landmark-Forest-->
+    <string name="achievement_landmarkforest" translatable="false">CgkI6pmL5cEREAIQDQ</string>
+    <!--achievement Landmark-The Gate-->
+    <string name="achievement_landmarkthe_gate" translatable="false">CgkI6pmL5cEREAIQDg</string>
+    <!--achievement Landmark-SNU-->
+    <string name="achievement_landmarksnu" translatable="false">CgkI6pmL5cEREAIQDw</string>
+    <!--achievement Expedition Travler-->
+    <string name="achievement_expedition_travler" translatable="false">CgkI6pmL5cEREAIQEA</string>
+    <!--achievement Expedition 1km-->
+    <string name="achievement_expedition_1km" translatable="false">CgkI6pmL5cEREAIQEQ</string>
+    <!--achievement Expedition 2km-->
+    <string name="achievement_expedition_2km" translatable="false">CgkI6pmL5cEREAIQEg</string>
+    <!--achievement Expedition 3km-->
+    <string name="achievement_expedition_3km" translatable="false">CgkI6pmL5cEREAIQEw</string>
+    <!--achievement Expedition 5km-->
+    <string name="achievement_expedition_5km" translatable="false">CgkI6pmL5cEREAIQFA</string>
+    <!--achievement The First Launch-->
+    <string name="achievement_the_first_launch" translatable="false">CgkI6pmL5cEREAIQFQ</string>
+    <!--achievement To the Moon-->
+    <string name="achievement_to_the_moon" translatable="false">CgkI6pmL5cEREAIQFg</string>
+    <!--achievement Abstaining-->
+    <string name="achievement_abstaining" translatable="false">CgkI6pmL5cEREAIQFw</string>
+    <!--achievement Photographer-->
+    <string name="achievement_photographer" translatable="false">CgkI6pmL5cEREAIQGA</string>
+    <!--achievement Love Yourself-->
+    <string name="achievement_love_yourself" translatable="false">CgkI6pmL5cEREAIQGQ</string>
+    <!--achievement Socializer-->
+    <string name="achievement_socializer" translatable="false">CgkI6pmL5cEREAIQGg</string>
+    <!--leaderboard Experience Point-->
+    <string name="leaderboard_experience_point" translatable="false">CgkI6pmL5cEREAIQAQ</string>
 </resources>

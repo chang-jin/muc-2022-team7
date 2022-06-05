@@ -180,6 +180,4 @@ public class FinishActivity extends AppCompatActivity {
 
         module.textToSpeech(sb.toString());
     }
-
-
 }
