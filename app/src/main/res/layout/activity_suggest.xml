@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="10dp">
+
+<!--    <TextView-->
+<!--        android:id="@+id/main_header"-->
+<!--        android:text="@string/main_header"-->
+
+
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:gravity="center"-->
+<!--        android:textAlignment="center"-->
+<!--        android:paddingTop="20dp"-->
+
+<!--        android:paddingBottom="10dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textAllCaps="true"-->
+<!--        android:textSize="32dp"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/start_recording"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_blue0"-->
+<!--        android:text="Start a new walk"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/main_summary"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:orientation="vertical"-->
+
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/view_purple0"-->
+
+<!--        >-->
+
+<!--        <TextView-->
+<!--        android:id="@+id/main_summary_title"-->
+<!--        android:text="Summary"-->
+
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="28sp"-->
+
+<!--        android:gravity="center"-->
+<!--        android:textAlignment="center"-->
+<!--        android:paddingBottom="10dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textAllCaps="true" />-->
+
+<!--        <TextView-->
+<!--        android:id="@+id/main_summary_content"-->
+<!--        android:layout_width="match_parent"-->
+<!--            android:layout_height="100dp"-->
+
+<!--        android:layout_margin="10dp"-->
+<!--        android:layout_below="@id/main_summary_title"-->
+<!--        android:text="You have traveled 10kms for 10 hours in total!"-->
+<!--        android:textColor="@color/white"-->
+<!--            android:gravity="center"-->
+<!--            android:textAlignment="center"-->
+<!--        android:textSize="24sp" />-->
+
+<!--    </LinearLayout>-->
+
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/main_suggest"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="400dp"-->
+<!--        android:orientation="vertical"-->
+
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/view_magenta0"-->
+
+<!--        >-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/main_suggest_title"-->
+<!--            android:text="Why don't you"-->
+
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:layout_margin="10dp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="28sp"-->
+
+<!--            android:gravity="center"-->
+<!--            android:textAlignment="center"-->
+<!--            android:paddingBottom="10dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textAllCaps="true" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/main_suggest_img"-->
+<!--            android:background="@drawable/namsan"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_gravity="center"-->
+<!--            />-->
+
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/main_suggest_content"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+
+<!--            android:layout_margin="10dp"-->
+<!--            android:text="Namsan Tower: braille blocks are present and the air is nice"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:gravity="center"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textSize="24sp" />-->
+
+<!--    </LinearLayout>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/gallery"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_magenta0"-->
+<!--        android:text="Gallery"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/achievement"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_yellow0"-->
+<!--        android:text="Achievements"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/leaderboard"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_purple0"-->
+<!--        android:text="Leaderboard"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/logs"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_blue0"-->
+<!--        android:text="Logs"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/test"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:background="@drawable/button_blue0"-->
+<!--        android:text="Tests"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
+
+
+
+</LinearLayout>
+</ScrollView>
