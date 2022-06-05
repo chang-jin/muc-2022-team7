@@ -21,12 +21,14 @@ public class DetailAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<LogEntity> mData = null;
 
     public class entityContents extends RecyclerView.ViewHolder {
+        TextView pos;
         TextView time;
         TextView loc;
         TextView step;
 
         entityContents(View itemView) {
             super(itemView) ;
+            pos = itemView.findViewById(R.id.contentPos);
             time = itemView.findViewById(R.id.contentsTime);
             loc = itemView.findViewById(R.id.contentsLoc);
             step = itemView.findViewById(R.id.contentStep);
@@ -52,9 +54,14 @@ public class DetailAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((entityContents) holder).time.setText("test1");
-        ((entityContents) holder).loc.setText("test2");
-        ((entityContents) holder).step.setText("test3");
+
+        String timeStamp = mData.get(position).getLogTime().split(" ")[1];
+        timeStamp = timeStamp.split(":")[0] + " : " + timeStamp.split(":")[1];
+
+        ((entityContents) holder).pos.setText(getItemCount()+"/"+(position+1));
+        ((entityContents) holder).time.setText(timeStamp);
+        ((entityContents) holder).loc.setText(mData.get(position).getLocName());
+        ((entityContents) holder).step.setText(mData.get(position).getLocalStep()+" STEPS");
     }
 
     @Override

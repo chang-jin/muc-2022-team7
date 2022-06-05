@@ -7,16 +7,26 @@
     android:orientation="vertical"
     tools:context=".ui.logs.logsActivity">
 
+
+
     <Button
         android:id="@+id/back_main"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_margin="10dp"
-        android:background="#DC267F"
+        android:layout_margin="20dp"
+        android:background="@drawable/button_blue0"
         android:text="BACK"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:backgroundTint="@null" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recording List"
+        android:gravity="center">
+    </TextView>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginHorizontal="20dp"

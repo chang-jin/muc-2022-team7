@@ -8,10 +8,10 @@
         android:color="#D9E5FF"/>
     <!-- 테두리 -->
     <stroke
-        android:width="2dp"
+        android:width="5dp"
         android:color="#0054FF" />
     <!-- 크기 -->
     <size
-        android:width="28dp"
-        android:height="28dp"/>
+        android:width="35dp"
+        android:height="35dp"/>
 </shape>

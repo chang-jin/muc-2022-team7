@@ -11,11 +11,22 @@ public class logEntity {
     private String date;
     private String startTimeRev;
 
-    logEntity(Project proj,String dateAxis, String sTime){
+    public int getActivityNumber() {
+        return activityNumber;
+    }
+
+    public void setActivityNumber(int activityNumber) {
+        this.activityNumber = activityNumber;
+    }
+
+    private int activityNumber;
+
+    logEntity(Project proj,String dateAxis, String sTime, int originalPos){
         type = 0;
         project = proj;
         date = dateAxis;
         startTimeRev = sTime;
+        activityNumber = originalPos;
     }
 
     logEntity(String dateAxis){
@@ -50,7 +61,7 @@ public class logEntity {
             if(!prevTime.equals(times[0]))
                 buf.add(new logEntity(times[0]));
 
-            buf.add(new logEntity(tmp,times[0],times[1].split(":")[0]+"\n"+times[1].split(":")[1]));
+            buf.add(new logEntity(tmp,times[0],times[1].split(":")[0]+"\n"+times[1].split(":")[1],i));
 
             prevTime = times[0];
         }

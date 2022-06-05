@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.snu.muc.dogeeye.R;
+import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
@@ -27,12 +28,14 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private ProjectDao pDao;
     private ProjectDB pdb;
     private Context logContext;
+    private TextSpeechModule module = null;
 
     public class ViewHolderLog extends ViewHolder {
         TextView timeStamp;
         TextView startLoc;
         TextView endLoc;
         int pid=0;
+        int initialPos=0;
 
         ViewHolderLog(View itemView) {
             super(itemView) ;
@@ -50,19 +53,22 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                     if(selected[0])
                     {
-                        Log.d("entitySelection", "delete Log " + pos + " [" + pid + "]");
+//                        Log.d("entitySelection", "delete Log " + pos + " [" + pid + "]");
                         Project project = new Project();
                         project.setId(pid);
                         pDao.delProject(project);
                         mData.remove(pos);
+                        module.textToSpeech("Delete the " + initialPos + "th activity");
                         notifyDataSetChanged();
+
                     }
                     else
                     {
-                        Log.d("entitySelection","unselected Log "+pos+" [" + pid + "]");
+//                        Log.d("entitySelection","unselected Log "+pos+" [" + pid + "]");
                         Intent intent = new Intent(logContext,detailLogs.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("curProj",pid);
+                        intent.putExtra("orderedNumber",initialPos);
 
                         logContext.startActivity(intent);
                     }
@@ -78,6 +84,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         selected[0] = false;
                         startLoc.setText(prevData[0]);
                         endLoc.setText(prevData[1]);
+                        module.textToSpeech("The " + initialPos + "th activity selection canceled");
                         return true;
                     }
                     else
@@ -87,6 +94,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         prevData[1] = (String) endLoc.getText();
                         startLoc.setText("Touch Once Again");
                         endLoc.setText("Delete Log");
+                        module.textToSpeech("The "+ initialPos + "th activity is selected to delete "+ "   touch once again to delete");
                         return true;
                     }
 
@@ -105,6 +113,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public EntityAdaptor(ArrayList<logEntity> list, Context context){
+        module = TextSpeechModule.getInstance();
         mData = list;
         logContext = context;
         pdb = ProjectDB.getProjectDB(context);
@@ -143,6 +152,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if(lgEntity.getType() == 0)
         {
             Project project = lgEntity.getProject();
+            ((ViewHolderLog) holder).initialPos = lgEntity.getActivityNumber()+1;
             ((ViewHolderLog) holder).pid = project.getId();
             ((ViewHolderLog) holder).timeStamp.setText(String.valueOf(lgEntity.getStartTimeRev()));
             try{

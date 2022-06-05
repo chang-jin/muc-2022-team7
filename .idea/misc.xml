@@ -5,11 +5,13 @@
       <map>
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/drawable/button_blue0.xml" value="0.134" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/drawable/custom_seekbar_progress.xml" value="0.2975" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/drawable/custom_seekbar_thumb.xml" value="0.1655" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_detail_logs.xml" value="0.16" />
-        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_logs.xml" value="0.1" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_logs.xml" value="0.22" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/activity_record.xml" value="0.203125" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/date_divider.xml" value="0.1889564336372847" />
-        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/entity_contents.xml" value="0.13055555555555556" />
+        <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/entity_contents.xml" value="0.25" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/fragment_record.xml" value="0.25" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/log_entity_selector.xml" value="0.25769927536231885" />
         <entry key="..\:/Users/priso/AndroidStudioProjects/muc-2022-team7/app/src/main/res/layout/recycler.xml" value="0.33" />

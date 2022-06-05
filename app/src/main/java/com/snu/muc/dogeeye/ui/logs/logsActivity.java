@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.R;
+import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityLogsBinding;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
@@ -29,7 +31,6 @@ public class logsActivity extends AppCompatActivity {
     private ProjectDao pDao;
     private ProjectDB pdb;
     ArrayList<Project> projectList;
-    ActivityLogsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +56,28 @@ public class logsActivity extends AppCompatActivity {
         Collections.reverse(projectList);
         ArrayList<logEntity> dateAddedProject = logEntity.getEntityList(projectList);
 
-        for(int i = 0 ; i < dateAddedProject.size() ; ++i)
-        {
-            Log.d("revised", dateAddedProject.get(i).getType() +"__"+dateAddedProject.get(i).getDate());
-        }
+//        for(int i = 0 ; i < dateAddedProject.size() ; ++i)
+//        {
+//            Log.d("revised", dateAddedProject.get(i).getType() +"__"+dateAddedProject.get(i).getDate());
+//        }
+
+        speakLogSummary(projectList.size());
 
         adapter = new EntityAdaptor(dateAddedProject,getApplicationContext());
 
         recyclerView.setAdapter(adapter);
 
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void speakLogSummary(int activities)
+    {
+        TextSpeechModule module = TextSpeechModule.getInstance();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( "Total " + activities + " activities recorded");
+
+        module.textToSpeech(sb.toString());
     }
 }
