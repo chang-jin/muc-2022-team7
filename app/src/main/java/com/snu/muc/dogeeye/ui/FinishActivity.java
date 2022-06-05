@@ -123,7 +123,7 @@ public class FinishActivity extends AppCompatActivity {
             imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
         }
         PhotoStamp stamper = new PhotoStamp();
-        stamper.stamp(imageToShare, current);
+        stamper.stamp_random(imageToShare, current);
 
 //        imageToShare = stamper.stamp(imageToShare, current.getEveryMovingDistance());
 //

@@ -60,7 +60,7 @@ public class PhotoStamp {
         return result;
     }
 
-    public void stamp(Bitmap image, Project current) {
+    public void stamp_random(Bitmap image, Project current) {
         Canvas canvas = new Canvas(image);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -73,10 +73,36 @@ public class PhotoStamp {
 
         Paint paintForText = new Paint();
         paintForText.setColor(Color.BLACK);
-        paintForText.setTextSize(30);
+        paintForText.setTextSize(40);
         paintForText.setTextAlign(Paint.Align.CENTER);
 
         String customString = random_stamps[new Random().nextInt(random_stamps.length)];
+        canvas.drawText(customString,500.0f,50.0f, paintForText);
+
+        paintForText.setTextSize(50);
+
+        canvas.drawText(String.format("%d Steps", (int) current.getTotalStep()), 200.0f, 950.0f, paintForText); // Step
+        canvas.drawText(String.format("%s M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
+        canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
+//        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
+    }
+
+    public void stamp_customString(Bitmap image, Project current, String customString) {
+        Canvas canvas = new Canvas(image);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateTime start = null;
+        try {
+            start = new DateTime(dateFormat.parse(current.getStartTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Paint paintForText = new Paint();
+        paintForText.setColor(Color.BLACK);
+        paintForText.setTextSize(40);
+        paintForText.setTextAlign(Paint.Align.CENTER);
+
         canvas.drawText(customString,500.0f,50.0f, paintForText);
 
         paintForText.setTextSize(50);

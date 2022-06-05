@@ -6,19 +6,9 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize">
 
-    <Button
-        android:id="@+id/takePhoto"
-        android:layout_width="336dp"
-        android:layout_height="111dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="#DD1B56"
-        android:text="Take a Photo"
-        app:layout_constraintBottom_toTopOf="@+id/takeSelfie"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/totalDistance"
         android:layout_width="335dp"
         android:layout_height="84dp"
@@ -29,30 +19,6 @@
         android:textColor="#1A1A1A"
         app:layout_constraintBottom_toTopOf="@+id/takePhoto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/takeSelfie"
-        android:layout_width="336dp"
-        android:layout_height="111dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#FFB000"
-        android:text="Take a selfie"
-        app:layout_constraintBottom_toTopOf="@+id/finish"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/finish"
-        android:layout_width="336dp"
-        android:layout_height="111dp"
-        android:layout_marginBottom="40dp"
-        android:backgroundTint="#648FFF"
-        android:text="Finish Walk"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -72,7 +38,7 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Current Total Walk Distance"
+        android:text="Current Walk"
         android:textColor="#1A1A1A"
         app:layout_constraintBottom_toTopOf="@+id/totalDistance"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,5 +59,57 @@
         app:layout_constraintBottom_toTopOf="@+id/totalDistance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/takePhoto"
+
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginVertical="20dp"
+        android:backgroundTint="@null"
+        android:background="@drawable/button_purple0"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+
+        android:text="Take a Photo"
+        app:layout_constraintBottom_toTopOf="@+id/takeSelfie"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/takeSelfie"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginVertical="20dp"
+        android:backgroundTint="@null"
+        android:background="@drawable/button_magenta0"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+
+        android:text="Take a selfie"
+        app:layout_constraintBottom_toTopOf="@+id/finish"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/finish"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginVertical="20dp"
+        android:backgroundTint="@null"
+        android:background="@drawable/button_blue0"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+
+        android:text="Finish the Walk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

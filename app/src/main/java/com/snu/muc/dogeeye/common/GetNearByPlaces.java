@@ -16,33 +16,32 @@ public class GetNearByPlaces {
     Location loc;
     String googleMapAPI = "AIzaSyDjNh3Qbn8FKrfrL6duXYwoeyov68V-35o";
     String mapAPIURLFront = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-    String mapAPIURLBack = "&radius=5000&types=hospital&key=" + googleMapAPI;
+    String mapAPIURLBack = "&radius=500&types=hospital&key=" + googleMapAPI;
 
     String totalAPIURL = mapAPIURLFront + loc.toString() + mapAPIURLBack;
 
-    protected String getJson() {
+
+    public void setLoc(Location newLoc){
+        loc = newLoc;
+    }
+
+    public String getJson() {
 
         HttpURLConnection connection = null;
         BufferedReader reader = null;
-
         try {
             URL url = new URL(totalAPIURL);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
-
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
-
             StringBuffer buffer = new StringBuffer();
             String line = "";
-
             while ((line = reader.readLine()) != null) {
                 buffer.append(line+"\n");
                 Log.d("Response: ", "> " + line);
             }
-
             return buffer.toString();
-
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
