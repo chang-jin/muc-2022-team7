@@ -63,7 +63,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button takeSelfieButton;
 
     //service thread
-    Thread rThread, uThread;
+    Thread rThread = null;
+    Thread uThread;
 
     //services
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -307,25 +308,32 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         }
     }
 
+    Thread getRecThread()
+    {
+        if(rThread == null)
+        {
+            rThread = new recThread();
+        }
+
+        return rThread;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+    }
 
-        //start recThread
-        localStep = 0;
-        movingDistanceSum = 0;
-        Project proj = new Project();
-        long mNow = System.currentTimeMillis();
-        Date mDate = new Date(mNow);
-        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        proj.setStartTime(mFormat.format(mDate));
-        pDao.addProject(proj);
-        curProject = pDao.getCurrentPid();
-        recoding = true;
-        rThread = new recThread();
-        rThread.start();
-        Toast.makeText(this,"recThread Start!",Toast.LENGTH_LONG).show();
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        recoding = false;
+        uThread = new updateThread();
+        uThread.start();
+        try {
+            uThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -406,6 +414,21 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         }
 
         g = new Geocoder(this);
+
+        //start recThread
+        localStep = 0;
+        movingDistanceSum = 0;
+        recoding = true;
+        Project proj = new Project();
+        long mNow = System.currentTimeMillis();
+        Date mDate = new Date(mNow);
+        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        proj.setStartTime(mFormat.format(mDate));
+        pDao.addProject(proj);
+        curProject = pDao.getCurrentPid();
+        rThread = getRecThread();
+        rThread.start();
+        Toast.makeText(this,"recThread Start!",Toast.LENGTH_LONG).show();
 
 
     }
