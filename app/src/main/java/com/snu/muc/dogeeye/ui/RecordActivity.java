@@ -104,7 +104,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private String curLocString ="";
     GetNearByPlaces locator;
     Location globalCurLoc;
-    Thread locThread;
+    Thread locatorThread;
 
 
     @Override
@@ -329,7 +329,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         return rThread;
     }
 
-    private class locThread extends Thread{
+    private class locatorThread extends Thread{
         @Override
         public void run(){
             while (true) {
@@ -350,11 +350,11 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         }
     }
 
-    Thread getLocThread()
+    Thread getLocatorThread()
     {
         if(rThread == null)
         {
-            rThread = new locThread();
+            rThread = new locatorThread();
         }
 
         return rThread;
@@ -479,12 +479,11 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         globalCurLoc = new Location("curLoc");
         globalCurLoc.setLongitude(0);
         globalCurLoc.setLatitude(0);
-        locThread = getLocThread();
+        locatorThread = getLocatorThread();
 
-        if(locThread.getState() == Thread.State.NEW){
-            locThread.start();
+        if(locatorThread.getState() == Thread.State.NEW){
+            locatorThread.start();
             Toast.makeText(this,"locThread Started!",Toast.LENGTH_LONG).show();
-
         }
 
     }
