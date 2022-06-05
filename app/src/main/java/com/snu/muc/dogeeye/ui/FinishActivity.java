@@ -31,6 +31,7 @@ import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.QuestChecker;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.common.PhotoStamp;
+import com.snu.muc.dogeeye.model.PhotoEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
@@ -80,8 +81,9 @@ public class FinishActivity extends AppCompatActivity {
         TextView tvDistance = findViewById(R.id.totalDistance);
         tvDistance.setText(String.format("%s KM", current.getEveryMovingDistance()));
 
-        // TODO : Photo container setup
-        if (true) {
+        // Photo Container Setup
+        List<PhotoEntity> photos = projectDao.getPhotoEntities(currentProjectId);
+        if (photos.isEmpty()) {
             LinearLayout photoContainer = findViewById(R.id.photoContainer);
             photoContainer.setVisibility(View.GONE);
         }
@@ -104,21 +106,23 @@ public class FinishActivity extends AppCompatActivity {
 
         share = findViewById(R.id.share);
         share.setOnClickListener(view -> {
-            shareTheWalk(current);
+            shareTheWalk(current, photos);
         });
 
         // Daily Summary
         speakDailySummary((int) current.getTotalStep(), current.getEveryMovingDistance(), 0, achieved.size());
     }
 
-    private void shareTheWalk(Project current) {
+    private void shareTheWalk(Project current, List<PhotoEntity> photos) {
         Bitmap imageToShare;
-        // photo.isEmpty()
-        if (true) {
+
+        if (photos.isEmpty()) {
             Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
             imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
         } else {
             // First picture of the project
+            // TODO: check how to get drawable of the photo file
+            String image = photos.get(0).getFilePath();
             Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
             imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
         }
