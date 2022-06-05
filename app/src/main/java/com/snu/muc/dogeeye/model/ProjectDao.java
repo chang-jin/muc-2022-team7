@@ -37,10 +37,21 @@ public interface ProjectDao {
     @Update
     void updLog(LogEntity log);
 
+    @Insert
+    void addPhoto(PhotoEntity photo);
+
+    @Delete
+    void delPhoto(PhotoEntity photo);
+
+    @Update
+    void updPhoto(PhotoEntity photo);
+
     @Query("select * from LogEntity")
     List<LogEntity> getAllLog();
 
     @Query("select * from LogEntity where PID = :id")
     List<LogEntity> getProjectLog(int id);
 
+    @Query("select * from PhotoEntity where PID = :id")
+    List<PhotoEntity> getPhotoEntities(int id);
 }

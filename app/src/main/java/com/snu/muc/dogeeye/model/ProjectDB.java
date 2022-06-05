@@ -6,7 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {LogEntity.class,Project.class}, version = 1)
+@Database(entities = {
+        PhotoEntity.class,
+        LogEntity.class,
+        Project.class,
+}, version = 1)
 public abstract class ProjectDB extends RoomDatabase {
 
     public abstract ProjectDao projectDao();

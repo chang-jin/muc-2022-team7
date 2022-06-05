@@ -363,6 +363,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
             public void onClick(View view) {
                 Intent takePhotoIntent = new Intent(RecordActivity.this, PhotoActivity.class);
                 takePhotoIntent.putExtra("facing", 1);
+                takePhotoIntent.putExtra("currentProjectId", curProject);
                 startActivity(takePhotoIntent);
             }
         });
@@ -372,6 +373,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
             public void onClick(View view) {
                 Intent takeSelfieIntent = new Intent(RecordActivity.this, PhotoActivity.class);
                 takeSelfieIntent.putExtra("facing", 0);
+                takeSelfieIntent.putExtra("currentProjectId", curProject);
                 startActivity(takeSelfieIntent);
             }
         });

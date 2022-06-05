@@ -2,7 +2,6 @@ package com.snu.muc.dogeeye.ui;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -30,11 +28,18 @@ import androidx.lifecycle.Observer;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
+import com.snu.muc.dogeeye.model.PhotoEntity;
+import com.snu.muc.dogeeye.model.Project;
+import com.snu.muc.dogeeye.model.ProjectDB;
+import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.ui.photo.ImageCaptioner;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -48,6 +53,10 @@ public class PhotoActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private MutableLiveData<String> caption = new MutableLiveData<>();
 
+    private ProjectDB pdb;
+    private ProjectDao pDao;
+    private int currentProjectId;
+
     private ProcessCameraProvider cameraProvider;
     private CameraSelector cameraSelector;
     private ImageAnalysis imageAnalysis;
@@ -58,6 +67,11 @@ public class PhotoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
+
+        // Database initialization
+        pdb = ProjectDB.getProjectDB(this);
+        pDao = pdb.projectDao();
+        currentProjectId = getIntent().getIntExtra("currentProjectId", -1);
 
         // Bind caption text view
         bindText();
@@ -169,7 +183,9 @@ public class PhotoActivity extends AppCompatActivity {
                             @Override
                             public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
                                 Uri savedUri = outputFileResults.getSavedUri();
+                                List<String> pathSegments = savedUri.getPathSegments();
                                 // DB save
+                                addNewPhoto(pathSegments.get(pathSegments.size() - 1));
                             }
 
                             @Override
@@ -190,5 +206,18 @@ public class PhotoActivity extends AppCompatActivity {
                 textView.setText(s);
             }
         });
+    }
+
+    void addNewPhoto(String fileName) {
+        PhotoEntity photoEntity = new PhotoEntity();
+        long mNow = System.currentTimeMillis();
+        Date mDate = new Date(mNow);
+        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        photoEntity.setPID(currentProjectId);
+        photoEntity.setFileName(fileName);
+        photoEntity.setFilePath((getExternalMediaDirs()[0].toString()));
+        photoEntity.setCreatedAt(mFormat.format(mDate));
+        pDao.addPhoto(photoEntity);
     }
 }
