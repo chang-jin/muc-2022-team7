@@ -3,6 +3,7 @@ package com.snu.muc.dogeeye;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,6 +54,32 @@ public class MainActivity extends AppCompatActivity {
             }, GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+
+    //check if it's the first launch
+    private boolean checkIfFirstRun() {
+        final String PREFS_NAME = "MyPrefsFile";
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final int DOESNT_EXIST = -1;
+        // Get the current version code
+        int currentVersionCode = BuildConfig.VERSION_CODE;
+        // Get the saved version code
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+            // This is just a normal run
+            return false;
+
+        } else if (savedVersionCode == DOESNT_EXIST) {
+            return true;
+            // TODO This is a new install (or the user cleared the shared preferences)
+        } else if (currentVersionCode > savedVersionCode) {
+            return false;
+        }
+        return false;
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class GetNearByPlaces {
+//    https://developers.google.com/maps/documentation/places/web-service/supported_types
     Location loc;
     String googleMapAPI = "AIzaSyDjNh3Qbn8FKrfrL6duXYwoeyov68V-35o";
     String mapAPIURLFront = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
