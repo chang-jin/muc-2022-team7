@@ -1,6 +1,7 @@
 package com.snu.muc.dogeeye.ui.logs;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private ArrayList<logEntity> mData = null;
     private ProjectDao pDao;
     private ProjectDB pdb;
+    private Context logContext;
 
     public class ViewHolderLog extends ViewHolder {
         TextView timeStamp;
@@ -56,7 +58,15 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         notifyDataSetChanged();
                     }
                     else
+                    {
                         Log.d("entitySelection","unselected Log "+pos+" [" + pid + "]");
+                        Intent intent = new Intent(logContext,detailLogs.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("curProj",pid);
+
+                        logContext.startActivity(intent);
+                    }
+
                 }
             });
 
@@ -76,7 +86,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         prevData[0] = (String) startLoc.getText();
                         prevData[1] = (String) endLoc.getText();
                         startLoc.setText("Touch Once Again");
-                        endLoc.setText("To Delete Log");
+                        endLoc.setText("Delete Log");
                         return true;
                     }
 
@@ -96,6 +106,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public EntityAdaptor(ArrayList<logEntity> list, Context context){
         mData = list;
+        logContext = context;
         pdb = ProjectDB.getProjectDB(context);
         pDao = pdb.projectDao();
     }

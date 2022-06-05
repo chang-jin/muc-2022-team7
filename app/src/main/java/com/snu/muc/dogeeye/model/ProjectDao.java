@@ -10,6 +10,7 @@ import java.util.List;
 
 @Dao
 public interface ProjectDao {
+
     @Insert
     void addProject(Project proj);
 
@@ -21,6 +22,9 @@ public interface ProjectDao {
 
     @Query("select * from Project")
     List<Project> getAllProjects();
+
+    @Query("select max(Project.id) from Project")
+    int getCurrentPid();
 
     @Query("select * from Project order by startTime desc")
     List<Project> getAllProjectsOrderedByStartTime();

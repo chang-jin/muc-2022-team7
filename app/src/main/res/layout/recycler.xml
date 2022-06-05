@@ -57,7 +57,7 @@
                     android:layout_height="match_parent"
                     android:textAlignment="center"
                     android:gravity="center"
-                    android:text=">"/>
+                    android:text="to"/>
 
             </LinearLayout>
 

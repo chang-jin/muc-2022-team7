@@ -320,7 +320,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         proj.setStartTime(mFormat.format(mDate));
         pDao.addProject(proj);
-        curProject = pDao.getAllProjects().size();
+        curProject = pDao.getCurrentPid();
         recoding = true;
         rThread = new recThread();
         rThread.start();
