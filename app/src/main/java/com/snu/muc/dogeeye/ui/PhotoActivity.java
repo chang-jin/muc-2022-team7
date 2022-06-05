@@ -112,7 +112,6 @@ public class PhotoActivity extends AppCompatActivity {
         imageAnalysis =
                 new ImageAnalysis.Builder()
                         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                        .setTargetResolution(new Size(224, 224))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build();
         imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ImageAnalysis.Analyzer() {
@@ -172,7 +171,6 @@ public class PhotoActivity extends AppCompatActivity {
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, String.valueOf(getExternalMediaDirs()[0]));
                 ImageCapture.OutputFileOptions outputFileOptions =
                         new ImageCapture.OutputFileOptions.Builder(
                                 new File(
@@ -186,6 +184,7 @@ public class PhotoActivity extends AppCompatActivity {
                                 List<String> pathSegments = savedUri.getPathSegments();
                                 // DB save
                                 addNewPhoto(pathSegments.get(pathSegments.size() - 1));
+                                ttsModule.textToSpeech("Photo Captured.");
                             }
 
                             @Override

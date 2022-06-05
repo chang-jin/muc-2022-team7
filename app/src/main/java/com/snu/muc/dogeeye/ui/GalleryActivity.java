@@ -118,6 +118,8 @@ public class GalleryActivity extends AppCompatActivity {
                 imageView.setLayoutParams(imageViewParams);
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setContentDescription(
+                        "This is an image.");
                 imageView.setOnClickListener(getImageViewOnClickListener());
                 imageViewList.add(imageView);
                 tableRow.addView(imageView);
