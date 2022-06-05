@@ -3,7 +3,7 @@
     <item android:state_pressed="true" >
         <shape android:shape="rectangle"  >
             <corners android:radius="5dip" />
-            <solid android:color="@color/ibm_skyblue"></solid>
+            <solid android:color="@color/quantum_grey200"></solid>
             <solid android:textColor="@color/white"></solid>
             <solid android:textSize="20sp"></solid>
 
@@ -13,7 +13,7 @@
     <item android:state_focused="true">
         <shape android:shape="rectangle"  >
             <corners android:radius="5dip" />
-            <solid android:color="@color/ibm_skyblue"></solid>
+            <solid android:color="@color/quantum_grey200"></solid>
             <solid android:textColor="@color/white"></solid>
             <solid android:textSize="20sp"></solid>
 
@@ -23,7 +23,7 @@
     <item >
         <shape android:shape="rectangle"  >
             <corners android:radius="5dip" />
-            <solid android:color="@color/ibm_skyblue"></solid>
+            <solid android:color="@color/quantum_grey200"></solid>
             <solid android:textColor="@color/white"></solid>
             <solid android:textSize="20sp"></solid>
 
