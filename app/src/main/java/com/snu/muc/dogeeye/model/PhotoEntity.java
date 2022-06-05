@@ -16,6 +16,7 @@ public class PhotoEntity {
 
     private String fileName;
     private String filePath;
+    private int facing;
     @ColumnInfo(index = true)
     private int PID;
 
@@ -38,6 +39,12 @@ public class PhotoEntity {
     }
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+    public int getFacing() {
+        return facing;
+    }
+    public void setFacing(int facing) {
+        this.facing = facing;
     }
     public int getPID() {
         return PID;

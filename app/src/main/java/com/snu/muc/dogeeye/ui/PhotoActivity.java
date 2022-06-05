@@ -217,6 +217,7 @@ public class PhotoActivity extends AppCompatActivity {
         photoEntity.setPID(currentProjectId);
         photoEntity.setFileName(fileName);
         photoEntity.setFilePath((getExternalMediaDirs()[0].toString()));
+        photoEntity.setFacing(getIntent().getIntExtra("facing", 1));
         photoEntity.setCreatedAt(mFormat.format(mDate));
         pDao.addPhoto(photoEntity);
     }
