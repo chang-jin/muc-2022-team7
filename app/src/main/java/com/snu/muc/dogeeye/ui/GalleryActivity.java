@@ -1,5 +1,6 @@
 package com.snu.muc.dogeeye.ui;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,7 +30,10 @@ import com.snu.muc.dogeeye.ui.photo.ImageCaptioner;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +85,19 @@ public class GalleryActivity extends AppCompatActivity {
                 continue;
             }
             TextView titleTextView = new TextView(this);
-            titleTextView.setText(
-                    project.getEndTime() + " / " +
-                            "Walk " + String.valueOf(project.getId()));
-            titleTextView.setTextSize(20);
+            String dateString = project.getEndTime();
+            SimpleDateFormat fromFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat toFormat = new SimpleDateFormat("EE, MMM dd");
+            try {
+                Date date = fromFormat.parse(dateString);
+                titleTextView.setText(
+                        toFormat.format(date)  + " / " +
+                                "Walk " + String.valueOf(project.getId()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            titleTextView.setTextSize(30);
+            titleTextView.setTypeface(Typeface.DEFAULT_BOLD);
             linearLayout.addView(titleTextView);
             linearLayout.addView(getTableLayoutWithPhotos(photos));
         }
