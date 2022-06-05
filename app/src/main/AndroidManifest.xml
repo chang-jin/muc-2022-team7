@@ -32,6 +32,10 @@
             android:name=".ui.FinishActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.TestActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/game_services_project_id" />

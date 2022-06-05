@@ -30,6 +30,7 @@ import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.QuestChecker;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
+import com.snu.muc.dogeeye.common.PhotoStamp;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
@@ -121,8 +122,11 @@ public class FinishActivity extends AppCompatActivity {
             Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
             imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
         }
-        makeShareImage(imageToShare, current);
+        PhotoStamp stamper = new PhotoStamp();
+        stamper.stamp(imageToShare, current);
 
+//        imageToShare = stamper.stamp(imageToShare, current.getEveryMovingDistance());
+//
         // Share the image through
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/jpeg");
@@ -177,25 +181,5 @@ public class FinishActivity extends AppCompatActivity {
         module.textToSpeech(sb.toString());
     }
 
-    private void makeShareImage(Bitmap image, Project current) {
-        Canvas canvas = new Canvas(image);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        DateTime start = null;
-        try {
-            start = new DateTime(dateFormat.parse(current.getStartTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Paint paintForText = new Paint();
-        paintForText.setColor(Color.BLACK);
-        paintForText.setTextSize(50);
-        paintForText.setTextAlign(Paint.Align.CENTER);
-
-        canvas.drawText(String.format("%d Steps", (int) current.getTotalStep()), 200.0f, 950.0f, paintForText); // Step
-        canvas.drawText(String.format("%s M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
-        canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
-//        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
-    }
 }

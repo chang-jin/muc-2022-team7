@@ -22,6 +22,7 @@ import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 import com.snu.muc.dogeeye.ui.GalleryActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
+import com.snu.muc.dogeeye.ui.TestActivity;
 import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
 import java.util.Locale;
@@ -148,6 +149,12 @@ public class MainActivity extends AppCompatActivity {
 
         binding.logs.setOnClickListener(view->{
             Intent intent = new Intent(MainActivity.this, logsActivity.class);
+            startActivity(intent);
+        });
+
+        binding.test.setOnClickListener(view -> {
+            // TODO : Change to gallery
+            Intent intent = new Intent(MainActivity.this, TestActivity.class);
             startActivity(intent);
         });
 

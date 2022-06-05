@@ -182,6 +182,17 @@
         android:textSize="24sp"
         app:backgroundTint="@null" />
 
+    <Button
+        android:id="@+id/test"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/button_blue0"
+        android:text="Tests"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:backgroundTint="@null" />
+
 
 
 </LinearLayout>
