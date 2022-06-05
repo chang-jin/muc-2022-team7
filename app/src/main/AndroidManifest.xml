@@ -58,6 +58,11 @@
             android:exported="true"
             android:label="PhotoActivity">
         </activity>
+        <activity
+            android:name=".ui.GalleryActivity"
+            android:exported="true"
+            android:label="GalleryActivity">
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
