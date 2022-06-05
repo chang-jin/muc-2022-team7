@@ -41,6 +41,8 @@ import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.R;
 
+import com.snu.muc.dogeeye.common.GetNearByPlaces;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +61,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button finish;
     Button steps;
     Button distance;
+    Button currentLoc;
+
     Button takePhotoButton;
     Button takeSelfieButton;
 
@@ -96,6 +100,11 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private float movingDistanceSum;
 
     final String REGEX = "[0-9]+";
+
+    private String curLocString ="";
+    GetNearByPlaces locator;
+    Location globalCurLoc;
+    Thread locThread;
 
 
     @Override
@@ -294,6 +303,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     curLoc.setLatitude(curLatitude);
                     curLoc.setLongitude(curLongitude);
 
+                    globalCurLoc = curLoc;
+
                     movingDistanceSum += prevLoc.distanceTo(curLoc);
 
                     steps.setText( Math.round(localStep) + " Steps");
@@ -313,6 +324,37 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         if(rThread == null)
         {
             rThread = new recThread();
+        }
+
+        return rThread;
+    }
+
+    private class locThread extends Thread{
+        @Override
+        public void run(){
+            while (true) {
+                try {
+                    Thread.sleep(20000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (recoding) {
+                    curLocString = locator.getLocString(globalCurLoc);
+                    currentLoc.setText(curLocString);
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+    }
+
+    Thread getLocThread()
+    {
+        if(rThread == null)
+        {
+            rThread = new locThread();
         }
 
         return rThread;
@@ -344,6 +386,9 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         finish = findViewById(R.id.finish);
         steps = findViewById(R.id.totalStep);
         distance = findViewById(R.id.totalDistance);
+        currentLoc = findViewById(R.id.currentLoc);
+
+
         takePhotoButton = findViewById(R.id.takePhoto);
         takeSelfieButton = findViewById(R.id.takeSelfie);
         finish.setOnClickListener(new View.OnClickListener() {
@@ -428,8 +473,19 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         curProject = pDao.getCurrentPid();
         rThread = getRecThread();
         rThread.start();
-        Toast.makeText(this,"recThread Start!",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"recThread Started!",Toast.LENGTH_LONG).show();
 
+        locator = new GetNearByPlaces();
+        globalCurLoc = new Location("curLoc");
+        globalCurLoc.setLongitude(0);
+        globalCurLoc.setLatitude(0);
+        locThread = getLocThread();
+
+        if(locThread.getState() == Thread.State.NEW){
+            locThread.start();
+            Toast.makeText(this,"locThread Started!",Toast.LENGTH_LONG).show();
+
+        }
 
     }
 }

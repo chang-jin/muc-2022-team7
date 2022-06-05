@@ -3,6 +3,7 @@ package com.snu.muc.dogeeye.common;
 import android.location.Location;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -65,7 +66,10 @@ public class GetNearByPlaces {
 
         try{
             JSONObject mainObject = new JSONObject(json_result);
-            return "";
+            JSONArray resultArray = mainObject.getJSONArray("results");
+            String name = (String) resultArray.getJSONObject(0).get("name");
+            Log.d("name", name);
+            return name;
         } catch (Exception e){
             return "";
         }
