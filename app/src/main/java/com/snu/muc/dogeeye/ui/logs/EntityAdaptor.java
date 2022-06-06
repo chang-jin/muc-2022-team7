@@ -153,15 +153,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((ViewHolderLog) holder).initialPos = lgEntity.getActivityNumber()+1;
             ((ViewHolderLog) holder).pid = project.getId();
             ((ViewHolderLog) holder).timeStamp.setText(String.valueOf(lgEntity.getStartTimeRev()));
-            try{
-                String[] tmp = project.getAddress().split("_");
-                ((ViewHolderLog) holder).startLoc.setText(tmp[1]);
-//                ((ViewHolderLog) holder).endLoc.setText(tmp[2]);
-            }catch (Exception e){
-                Random r= new Random();
-                ((ViewHolderLog) holder).startLoc.setText((r.nextInt(5000) + 100) + " steps");
-//                ((ViewHolderLog) holder).endLoc.setText("Failed Log");
-            }
+            ((ViewHolderLog) holder).startLoc.setText(project.getFarLocName()+"\n "+ project.getTotalStep() + " Steps");
         }
         else if(lgEntity.getType() == 1)
         {
