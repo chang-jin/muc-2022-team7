@@ -57,11 +57,6 @@ public class detailLogs extends AppCompatActivity {
 
         module = TextSpeechModule.getInstance();
 
-        TextView textView = findViewById(R.id.entityStart);
-        String startTime = detailedLog.get(0).getLogTime().split(" ")[1];
-        startTime = startTime.split(":")[0] + " : " + startTime.split(":")[1];
-        textView.setText(startTime);
-
         imageViewList = new ImageView[3];
         imageViewList[0] = findViewById(R.id.contentImage1);
         imageViewList[1] = findViewById(R.id.contentImage2);
@@ -91,27 +86,6 @@ public class detailLogs extends AppCompatActivity {
         DetailAdaptor adaptor = new DetailAdaptor(detailedLog);
         recyclerView.setAdapter(adaptor);
 
-
-        SeekBar seekBar = findViewById(R.id.seekBar);
-        seekBar.setMax(detailedLog.size()-1);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(50);
-                recyclerView.scrollToPosition(i);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
 
         StringBuilder sb = new StringBuilder();
 

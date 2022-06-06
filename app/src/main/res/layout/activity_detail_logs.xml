@@ -123,37 +123,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/entityStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginRight="5dp"
-                android:text="TEST!"/>
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="700dp"
-                android:layout_height="match_parent"
-                android:max="100"
-                android:min="0"
-                android:progress="0"
-                android:progressDrawable="@drawable/custom_seekbar_progress"
-                android:rotation="-270"
-
-                android:splitTrack="false"
-                android:thumb="@drawable/custom_seekbar_thumb"
-                android:translationX="-330dp" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>
