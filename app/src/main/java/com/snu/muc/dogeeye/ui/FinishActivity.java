@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -90,6 +91,12 @@ public class FinishActivity extends AppCompatActivity {
 
         // Photo Container Setup
         List<PhotoEntity> photos = projectDao.getPhotoEntities(currentProjectId);
+
+        RecyclerView photoRecyclerView = findViewById(R.id.photoList);
+        GridLayoutManager llm = new GridLayoutManager(this, 3);
+        photoRecyclerView.setLayoutManager(llm);
+        photoRecyclerView.setAdapter(new PhotoAdapter(this, photos));
+
         if (photos.isEmpty()) {
             LinearLayout photoContainer = findViewById(R.id.photoContainer);
             photoContainer.setVisibility(View.GONE);
