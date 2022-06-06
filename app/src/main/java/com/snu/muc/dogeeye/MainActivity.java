@@ -84,11 +84,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"This is the first run!",Toast.LENGTH_LONG).show();
             Log.d("checkIfFirstRun", "this is the first run");
 
-            Quest quest = new Quest("TODO:FIX THE ID",
-                    "The First Launch", "Launch the app for the first time");
+            log.d("Achieved = achievement_the_first_launch");
+            PlayGames.getAchievementsClient(this).unlock("TODO:FIX THE ID");
             log.d("Achieved = achievement_the_first_launch");
 
-            PlayGames.getAchievementsClient(this).unlock(quest.getId());
 
             return true;
             // TODO This is a new install (or the user cleared the shared preferences)
