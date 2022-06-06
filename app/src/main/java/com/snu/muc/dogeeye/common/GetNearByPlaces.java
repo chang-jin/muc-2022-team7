@@ -18,7 +18,7 @@ public class GetNearByPlaces {
 //    https://developers.google.com/maps/documentation/places/web-service/supported_types
     String googleMapAPI = "AIzaSyDjNh3Qbn8FKrfrL6duXYwoeyov68V-35o";
     String mapAPIURLFront = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-    String mapAPIURLBack = "&radius=300&types=food&key=" + googleMapAPI;
+    String mapAPIURLBack = "&radius=50&types=food&key=" + googleMapAPI;
 
     public String getJson(String loc) {
         String totalAPIURL = mapAPIURLFront + loc + mapAPIURLBack;
@@ -33,6 +33,7 @@ public class GetNearByPlaces {
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();
             String line = "";
+            Log.d("URL:", totalAPIURL);
             while ((line = reader.readLine()) != null) {
                 buffer.append(line+"\n");
                 Log.d("Response: ", "> " + line);
@@ -59,8 +60,8 @@ public class GetNearByPlaces {
     }
 
     public String getLocString(Location loc){
-        String y = "" + loc.getLatitude();
-        String x = "" + loc.getLongitude();
+        String x = "" + loc.getLatitude();
+        String y = "" + loc.getLongitude();
 
         String json_result = getJson(x + "," + y);
 

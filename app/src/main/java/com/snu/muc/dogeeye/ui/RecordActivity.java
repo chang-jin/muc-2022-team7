@@ -105,6 +105,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     GetNearByPlaces locator;
     Location globalCurLoc;
     Thread locatorThread;
+    private int i_recs;
 
 
     @Override
@@ -310,6 +311,15 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     steps.setText( Math.round(localStep) + " Steps");
                     distance.setText(movingDistanceSum + " m");
 
+                    i_recs++;
+
+                    if(i_recs >= 10){
+                        curLocString = locator.getLocString(globalCurLoc);
+                        currentLoc.setText(curLocString);
+                        i_recs =0;
+                    }
+
+
                 }
                 else
                 {
@@ -329,36 +339,36 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         return rThread;
     }
 
-    private class locatorThread extends Thread{
-        @Override
-        public void run(){
-            while (true) {
-                try {
-                    Thread.sleep(20000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (recoding) {
-                    curLocString = locator.getLocString(globalCurLoc);
-                    currentLoc.setText(curLocString);
-                }
-                else
-                {
-                    return;
-                }
-            }
-        }
-    }
-
-    Thread getLocatorThread()
-    {
-        if(rThread == null)
-        {
-            rThread = new locatorThread();
-        }
-
-        return rThread;
-    }
+//    private class locatorThread extends Thread{
+//        @Override
+//        public void run(){
+//            while (true) {
+//                try {
+//                    Thread.sleep(20000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                if (recoding) {
+//                    curLocString = locator.getLocString(globalCurLoc);
+//                    currentLoc.setText(curLocString);
+//                }
+//                else
+//                {
+//                    return;
+//                }
+//            }
+//        }
+//    }
+//
+//    Thread getLocatorThread()
+//    {
+//        if(rThread == null)
+//        {
+//            rThread = new locatorThread();
+//        }
+//
+//        return rThread;
+//    }
 
     @Override
     protected void onResume() {
@@ -479,12 +489,12 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         globalCurLoc = new Location("curLoc");
         globalCurLoc.setLongitude(0);
         globalCurLoc.setLatitude(0);
-        locatorThread = getLocatorThread();
-
-        if(locatorThread.getState() == Thread.State.NEW){
-            locatorThread.start();
-            Toast.makeText(this,"locThread Started!",Toast.LENGTH_LONG).show();
-        }
+//        locatorThread = getLocatorThread();
+//
+//        if(locatorThread.getState() == Thread.State.NEW){
+//            locatorThread.start();
+//            Toast.makeText(this,"locThread Started!",Toast.LENGTH_LONG).show();
+//        }
 
     }
 }
