@@ -41,8 +41,6 @@ import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.R;
 
-import com.snu.muc.dogeeye.common.GetNearByPlaces;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -61,8 +59,6 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button finish;
     Button steps;
     Button distance;
-    Button currentLoc;
-
     Button takePhotoButton;
     Button takeSelfieButton;
 
@@ -76,12 +72,13 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
     //service flag
     public static final int DEFAULT_LOCATION_REQUEST_PRIORITY = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-    public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 10000L; // loc interval : 10s
-    public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 5000L; // loc fast interval : 5s
+    public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 2000L; // loc interval : 4s
+    public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 1000L; // loc fast interval : 2s
     private static final int GPS_UTIL_LOCATION_RESOLUTION_REQUEST_CODE = 101;
+    private final long RECORDING_INTERVAL = 10000L;
 
 
-    //for step seensors
+    //for step sensors
     private SensorManager sensorManager;
     private Sensor stepCountSensor;
     private Sensor stepDetectorSensor;
@@ -93,24 +90,27 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private String landMark="",endTime;
     private Location startLoc, endLoc, midLoc;
 
+
+
     //recThread global values
-    private double curLongitude, curLatitude;
+    int coordinateIndex = 0;
+    private double[] curLongitude = new double[10];
+    private double[] curLatitude = new double[10];
+
     private double prevLongitude, prevLatitude;
+    private double logLongtitude, logLatitude;
+
     private float globalStep, localStep;
+    private float prevGlobalStep, prevLocalStep;
     private float movingDistanceSum;
 
     final String REGEX = "[0-9]+";
-
-    private String curLocString ="";
-    GetNearByPlaces locator;
-    Location globalCurLoc;
-    Thread locatorThread;
-    private int i_recs;
 
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            prevGlobalStep = globalStep;
             globalStep = sensorEvent.values[0];
         }
         else if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
@@ -127,10 +127,18 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            prevLatitude = curLatitude;
-            prevLongitude = curLongitude;
-            curLongitude = locationResult.getLastLocation().getLongitude();
-            curLatitude = locationResult.getLastLocation().getLatitude();
+
+            double tmpLo = locationResult.getLastLocation().getLongitude();
+            double tmpLa = locationResult.getLastLocation().getLatitude();
+
+            if(tmpLa != 0 && tmpLo != 0) {
+                curLongitude[coordinateIndex] = tmpLo;
+                curLatitude[coordinateIndex] = tmpLa;
+                ++coordinateIndex;
+            }
+
+            if(coordinateIndex > 8)
+                coordinateIndex = 0;
         }
     };
 
@@ -266,32 +274,43 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         @Override
         public void run(){
             while (true) {
-//                try {
-//                    Thread.sleep(5000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    Thread.sleep(RECORDING_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (recoding) {
 
+                    logLatitude = 0;
+                    logLongtitude = 0;
+
                     //pass initial wrong values
-                    if(curLatitude == 0 || curLongitude == 0)
+                    if(coordinateIndex == 0)
                         continue;
 
-                    double totalLatitude = 0;
-                    double totalLongitude = 0;
+                    if(prevLocalStep == localStep)
+                        continue;
 
-                    for (int i = 0; i<5; i++){
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    int curPos = coordinateIndex;
+                    for(int i = 0 ; i < curPos ; ++i)
+                    {
+                        if(curLatitude[i] != 0 && curLongitude[i] != 0)
+                        {
+                            logLatitude += curLatitude[i];
+                            logLongtitude += curLongitude[i];
+
+//                            Log.d("GPSLoc","Lati : "+curLatitude[i]);
+//                            Log.d("GPSLoc","Lont : "+curLongitude[i]);
                         }
-                        totalLatitude += curLatitude;
-                        totalLongitude += curLongitude;
                     }
 
-                    double avgLatitude = totalLatitude /5;
-                    double avgLongitude = totalLongitude / 5;
+                    logLatitude /= curPos;
+                    logLongtitude /= curPos;
+                    coordinateIndex = 0;
+
+                    Log.d("GPSLoc","FinalLati : "+logLatitude);
+                    Log.d("GPSLoc","FinalLon : "+logLongtitude);
+                    Log.d("GPSLoc","----------------------");
 
 
                     LogEntity lg = new LogEntity();
@@ -300,8 +319,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
                     lg.setPID(curProject);
-                    lg.setLa(avgLatitude);
-                    lg.setLo(avgLongitude);
+                    lg.setLa(logLatitude);
+                    lg.setLo(logLongtitude);
                     lg.setGlobalStep(globalStep);
                     lg.setLocalStep(localStep);
                     lg.setLogTime(mFormat.format(mDate));
@@ -309,8 +328,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
                     Location prevLoc = new Location("prevLoc");
                     if(prevLatitude == 0 || prevLongitude == 0){
-                        prevLoc.setLatitude(avgLatitude);
-                        prevLoc.setLongitude(avgLongitude);
+                        prevLoc.setLatitude(logLatitude);
+                        prevLoc.setLongitude(logLongtitude);
                     }
                     else{
                         prevLoc.setLatitude(prevLatitude);
@@ -318,24 +337,24 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     }
 
                     Location curLoc = new Location("curLoc");
-                    curLoc.setLatitude(avgLatitude);
-                    curLoc.setLongitude(avgLongitude);
-
-                    globalCurLoc = curLoc;
+                    curLoc.setLatitude(logLatitude);
+                    curLoc.setLongitude(logLongtitude);
 
                     movingDistanceSum += prevLoc.distanceTo(curLoc);
 
+                    Log.d("GPSLoc",prevLoc.toString());
+                    Log.d("GPSLoc",curLoc.toString());
+                    Log.d("GPSLoc", String.valueOf(movingDistanceSum));
+                    Log.d("GPSLoc","----------------------");
+
+
                     steps.setText( Math.round(localStep) + " Steps");
-                    distance.setText(movingDistanceSum + " m");
+                    distance.setText(String.format("%.2f", movingDistanceSum) + " m");
 
-                    i_recs++;
 
-                    if(i_recs >= 10){
-                        curLocString = locator.getLocString(globalCurLoc);
-                        currentLoc.setText(curLocString);
-                        i_recs =0;
-                    }
-
+                    prevLatitude = logLatitude;
+                    prevLongitude = logLongtitude;
+                    prevLocalStep = localStep;
 
                 }
                 else
@@ -355,37 +374,6 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
         return rThread;
     }
-
-//    private class locatorThread extends Thread{
-//        @Override
-//        public void run(){
-//            while (true) {
-//                try {
-//                    Thread.sleep(20000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                if (recoding) {
-//                    curLocString = locator.getLocString(globalCurLoc);
-//                    currentLoc.setText(curLocString);
-//                }
-//                else
-//                {
-//                    return;
-//                }
-//            }
-//        }
-//    }
-//
-//    Thread getLocatorThread()
-//    {
-//        if(rThread == null)
-//        {
-//            rThread = new locatorThread();
-//        }
-//
-//        return rThread;
-//    }
 
     @Override
     protected void onResume() {
@@ -410,12 +398,18 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
 
+        prevGlobalStep = 0;
+        globalStep = 0;
+
+        prevLocalStep = 0;
+        localStep = 0;
+
+        prevLatitude = 0;
+        prevLongitude = 0;
+
         finish = findViewById(R.id.finish);
         steps = findViewById(R.id.totalStep);
         distance = findViewById(R.id.totalDistance);
-        currentLoc = findViewById(R.id.currentLoc);
-
-
         takePhotoButton = findViewById(R.id.takePhoto);
         takeSelfieButton = findViewById(R.id.takeSelfie);
         finish.setOnClickListener(new View.OnClickListener() {
@@ -500,18 +494,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         curProject = pDao.getCurrentPid();
         rThread = getRecThread();
         rThread.start();
-        Toast.makeText(this,"recThread Started!",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"recThread Start!",Toast.LENGTH_LONG).show();
 
-        locator = new GetNearByPlaces();
-        globalCurLoc = new Location("curLoc");
-        globalCurLoc.setLongitude(0);
-        globalCurLoc.setLatitude(0);
-//        locatorThread = getLocatorThread();
-//
-//        if(locatorThread.getState() == Thread.State.NEW){
-//            locatorThread.start();
-//            Toast.makeText(this,"locThread Started!",Toast.LENGTH_LONG).show();
-//        }
 
     }
 }
