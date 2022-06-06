@@ -60,8 +60,8 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         pDao.delProject(project);
                         mData.remove(pos);
                         module.textToSpeech("Delete the " + initialPos + "th activity");
+                        selected[0] = false;
                         notifyDataSetChanged();
-
                     }
                     else
                     {
