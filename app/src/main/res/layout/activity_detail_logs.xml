@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.logs.detailLogs"
+    tools:context=".ui.logs.DetailActivity"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/detailId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Activity #"
-        android:gravity="center">
-    </TextView>
+        <TextView
+            android:id="@+id/detailId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activity #"
+            android:gravity="center">
+        </TextView>
 
     </LinearLayout>
 
@@ -70,7 +70,45 @@
 
                     </LinearLayout>
 
-                    </androidx.cardview.widget.CardView>
+                </androidx.cardview.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/contentImage1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/doge_launcher"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1">
+
+                    </ImageView>
+
+                    <ImageView
+                        android:id="@+id/contentImage2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/doge_launcher"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1">
+
+                    </ImageView>
+
+                    <ImageView
+                        android:id="@+id/contentImage3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/doge_launcher"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1">
+
+                    </ImageView>
+
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_marginHorizontal="20dp"
