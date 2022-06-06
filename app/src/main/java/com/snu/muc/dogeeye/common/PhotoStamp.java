@@ -82,7 +82,7 @@ public class PhotoStamp {
         paintForText.setTextSize(50);
 
         canvas.drawText(String.format("%d Steps", (int) current.getTotalStep()), 200.0f, 950.0f, paintForText); // Step
-        canvas.drawText(String.format("%s M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
+        canvas.drawText(String.format("%.2f M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
         canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
 //        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
     }
