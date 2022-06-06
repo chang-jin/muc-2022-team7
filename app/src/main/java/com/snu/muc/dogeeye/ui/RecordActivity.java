@@ -266,16 +266,33 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         @Override
         public void run(){
             while (true) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Thread.sleep(5000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 if (recoding) {
 
                     //pass initial wrong values
                     if(curLatitude == 0 || curLongitude == 0)
                         continue;
+
+                    double totalLatitude = 0;
+                    double totalLongitude = 0;
+
+                    for (int i = 0; i<5; i++){
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        totalLatitude += curLatitude;
+                        totalLongitude += curLongitude;
+                    }
+
+                    double avgLatitude = totalLatitude /5;
+                    double avgLongitude = totalLongitude / 5;
+
 
                     LogEntity lg = new LogEntity();
                     long mNow = System.currentTimeMillis();
@@ -283,8 +300,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
                     lg.setPID(curProject);
-                    lg.setLa(curLatitude);
-                    lg.setLo(curLongitude);
+                    lg.setLa(avgLatitude);
+                    lg.setLo(avgLongitude);
                     lg.setGlobalStep(globalStep);
                     lg.setLocalStep(localStep);
                     lg.setLogTime(mFormat.format(mDate));
@@ -292,8 +309,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
                     Location prevLoc = new Location("prevLoc");
                     if(prevLatitude == 0 || prevLongitude == 0){
-                        prevLoc.setLatitude(curLatitude);
-                        prevLoc.setLongitude(curLongitude);
+                        prevLoc.setLatitude(avgLatitude);
+                        prevLoc.setLongitude(avgLongitude);
                     }
                     else{
                         prevLoc.setLatitude(prevLatitude);
@@ -301,8 +318,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     }
 
                     Location curLoc = new Location("curLoc");
-                    curLoc.setLatitude(curLatitude);
-                    curLoc.setLongitude(curLongitude);
+                    curLoc.setLatitude(avgLatitude);
+                    curLoc.setLongitude(avgLongitude);
 
                     globalCurLoc = curLoc;
 
