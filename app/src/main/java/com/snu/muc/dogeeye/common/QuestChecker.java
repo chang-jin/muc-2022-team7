@@ -69,6 +69,22 @@ public class QuestChecker {
         return ret;
     }
 
+    public double[] getTotalDistanceAndSteps(){
+        double[] distanceAndSteps = new double[2];
+        List<Project> projects = projectDao.getAllProjectsOrderedByStartTime();
+        double totalDistance = 0;
+        double totalSteps = 0;
+        for (int i = 0; i < projects.size(); i++) {
+            totalDistance += projects.get(i).getEveryMovingDistance();
+            totalSteps += projects.get(i).getTotalStep();
+        }
+
+        distanceAndSteps[0] = totalDistance;
+        distanceAndSteps[1] = totalSteps;
+
+        return distanceAndSteps;
+    }
+
     private List<Quest> checkInterestingQuests() {
         List<Quest> interestingQuests = new ArrayList();
         List<Project> projects = projectDao.getAllProjectsOrderedByStartTime();

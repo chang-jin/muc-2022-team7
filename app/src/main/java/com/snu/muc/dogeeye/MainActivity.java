@@ -31,6 +31,8 @@ import com.snu.muc.dogeeye.ui.TestActivity;
 import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
 import java.util.Locale;
+import java.util.Random;
+
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -41,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int GPS_UTIL_LOCATION_PERMISSION_REQUEST_CODE = 100;
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_ACHIEVEMENT_UI = 9003;
+
+    String[] random_encouragements = new String[]{
+            "You look better than ever!",
+            "Another day of sun has risen.",
+            "Never gonna give you up!",
+            "An adventure awaits you!"
+    };
 
     private void checkPermission() {
         int accessLocation = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -139,13 +148,24 @@ public class MainActivity extends AppCompatActivity {
         checkIfFirstRun();
         super.onCreate(savedInstanceState);
 
+        QuestChecker questChecker = new QuestChecker(this, -1);
+        double[] totalDistanceAndSteps = questChecker.getTotalDistanceAndSteps();
+        String encouragement = random_encouragements[new Random().nextInt(random_encouragements.length)];
+
+        String summary = encouragement + " You have traveled " + Math.round(totalDistanceAndSteps[0]/1000) + " kms," + Math.round(totalDistanceAndSteps[1]) + " steps in total.";
+
+
         mTTSModule = TextSpeechModule.getInstance();
         mTTSModule.init(this, Locale.US);
 
         checkPermission();
 
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.mainSummaryContent.setText(summary);
+
 
         binding.startRecording.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, RecordActivity.class);
@@ -170,16 +190,16 @@ public class MainActivity extends AppCompatActivity {
             showLeaderboard();
         });
 
-        binding.logs.setOnClickListener(view->{
+        binding.mainSummary.setOnClickListener(view->{
             Intent intent = new Intent(MainActivity.this, logsActivity.class);
             startActivity(intent);
         });
 
-        binding.test.setOnClickListener(view -> {
-            // TODO : Change to gallery
-            Intent intent = new Intent(MainActivity.this, TestActivity.class);
-            startActivity(intent);
-        });
+//            binding.test.setOnClickListener(view -> {
+//                // TODO : Change to gallery
+//                Intent intent = new Intent(MainActivity.this, TestActivity.class);
+//                startActivity(intent);
+//            });
 
 
         PlayGamesSdk.initialize(this);
