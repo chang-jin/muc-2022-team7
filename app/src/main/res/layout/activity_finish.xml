@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
 
     <LinearLayout
@@ -28,7 +27,9 @@
             android:textColor="@color/black"
             android:text="Total Step"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +64,10 @@
             android:text="Total Distance"
             android:textSize="20dp"
             android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textAlignment="center"
+
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,7 +83,8 @@
                 android:text="Total Distance"
                 android:textAlignment="center"
                 android:textColor="#1A1A1A"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                />
         </LinearLayout>
     </LinearLayout>
 
@@ -97,9 +102,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:text="Today New Photos"
+            android:text="Today's New Photos"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textAlignment="center"
+
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/photoList"
@@ -123,15 +131,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:text="Today New Achievements"
+            android:text="Today's New Achievements"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/achievementList"
-            android:layout_marginHorizontal="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp" />
 
     </LinearLayout>
 
@@ -144,7 +154,7 @@
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/share"
             android:layout_width="match_parent"
             android:layout_height="70dp"
@@ -161,7 +171,7 @@
         android:layout_marginHorizontal="20dp"
         android:orientation="vertical">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/finish"
             android:layout_width="match_parent"
             android:layout_height="70dp"
