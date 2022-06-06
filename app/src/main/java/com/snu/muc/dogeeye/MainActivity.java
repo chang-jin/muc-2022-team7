@@ -148,11 +148,6 @@ public class MainActivity extends AppCompatActivity {
         checkIfFirstRun();
         super.onCreate(savedInstanceState);
 
-        QuestChecker questChecker = new QuestChecker(this, -1);
-        double[] totalDistanceAndSteps = questChecker.getTotalDistanceAndSteps();
-        String encouragement = random_encouragements[new Random().nextInt(random_encouragements.length)];
-
-        String summary = encouragement + " You have traveled " + Math.round(totalDistanceAndSteps[0]/1000) + " kms," + Math.round(totalDistanceAndSteps[1]) + " steps in total.";
 
 
         mTTSModule = TextSpeechModule.getInstance();
@@ -163,9 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        binding.mainSummaryContent.setText(summary);
-
 
         binding.startRecording.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, RecordActivity.class);
@@ -194,6 +186,14 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, logsActivity.class);
             startActivity(intent);
         });
+
+        QuestChecker questChecker = new QuestChecker(this, -1);
+        double[] totalDistanceAndSteps = questChecker.getTotalDistanceAndSteps();
+        String encouragement = random_encouragements[new Random().nextInt(random_encouragements.length)];
+
+        String summary = encouragement + "\nYou have traveled \n" + Math.round(totalDistanceAndSteps[0]/1000) + " kms, " + Math.round(totalDistanceAndSteps[1]) + " steps in total.";
+        binding.mainSummaryContent.setText(summary);
+
 
 //            binding.test.setOnClickListener(view -> {
 //                // TODO : Change to gallery

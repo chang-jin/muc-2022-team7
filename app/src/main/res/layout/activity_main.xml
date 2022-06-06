@@ -46,7 +46,7 @@
     <LinearLayout
         android:id="@+id/main_summary"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
 
         android:layout_margin="10dp"
@@ -59,27 +59,31 @@
         android:text="Records"
 
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
+        android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="28sp"
+            android:layout_margin="10dp"
 
-        android:gravity="center"
+
+            android:gravity="center"
         android:textAlignment="center"
         android:paddingBottom="10dp"
         android:textStyle="bold"
-        android:textAllCaps="true" />
+        android:textAllCaps="true"
+            android:layout_gravity="center"
+            />
 
         <TextView
         android:id="@+id/main_summary_content"
         android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:gravity="center"
 
         android:layout_margin="10dp"
         android:layout_below="@id/main_summary_title"
         android:text="You have traveled 10kms for 10 hours in total!"
         android:textColor="@color/white"
-            android:gravity="center"
             android:textAlignment="center"
         android:textSize="24sp" />
 
@@ -127,7 +131,7 @@
             android:layout_height="match_parent"
 
             android:layout_margin="10dp"
-            android:text="Namsan Tower: braille blocks are present and the air is nice"
+            android:text="discover the next place to go?"
             android:textColor="@color/white"
             android:gravity="center"
             android:textAlignment="center"
