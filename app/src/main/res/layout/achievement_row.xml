@@ -18,7 +18,6 @@
         android:layout_marginStart="10dp"
         android:layout_gravity="center"
         android:textAlignment="center"
-        android:text="Hello, this is the title"
         android:textSize="30sp" />
 
 </LinearLayout>
