@@ -13,12 +13,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 
 public class GetNearByPlaces {
 //    https://developers.google.com/maps/documentation/places/web-service/supported_types
     String googleMapAPI = "AIzaSyDjNh3Qbn8FKrfrL6duXYwoeyov68V-35o";
     String mapAPIURLFront = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-    String mapAPIURLBack = "&radius=50&types=food&key=" + googleMapAPI;
+    String mapAPIURLBack = "&radius=30&key=" + googleMapAPI;
+
+
 
     public String getJson(String loc) {
         String totalAPIURL = mapAPIURLFront + loc + mapAPIURLBack;
@@ -66,13 +69,22 @@ public class GetNearByPlaces {
         String json_result = getJson(x + "," + y);
 
         try{
+
             JSONObject mainObject = new JSONObject(json_result);
             JSONArray resultArray = mainObject.getJSONArray("results");
-            String name = (String) resultArray.getJSONObject(0).get("name");
-            Log.d("name", name);
-            return name;
+
+            int totalNum = resultArray.length();
+            Random r= new Random();
+            while(true){
+                String name = (String) resultArray.getJSONObject(r.nextInt(totalNum)).get("name");
+                if(!name.equalsIgnoreCase("Seoul")){
+                    Log.d("name", name);
+                    return name;
+                }
+            }
+
         } catch (Exception e){
-            return "";
+            return "SEOUL!";
         }
     }
 

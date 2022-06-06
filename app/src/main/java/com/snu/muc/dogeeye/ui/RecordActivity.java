@@ -32,19 +32,30 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.snu.muc.dogeeye.MainActivity;
+import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.GetNearByPlaces;
 import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
-import com.snu.muc.dogeeye.R;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class RecordActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -65,9 +76,24 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button takePhotoButton;
     Button takeSelfieButton;
 
+
+    PlacesClient placesClient;
+    List<Place.Field> placeFields;
+    FindCurrentPlaceRequest request;
+
+    String[] likelyPlaceNames;
+    String[] likelyPlaceAddresses;
+    List[] likelyPlaceAttributions;
+    LatLng[] likelyPlaceLatLngs;
+    Task<FindCurrentPlaceResponse> placeResult;
+
+    String resultString;
+
+
     //service thread
     Thread rThread = null;
     Thread uThread;
+
 
     //services
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -78,7 +104,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     public static final long DEFAULT_LOCATION_REQUEST_INTERVAL = 2000L; // loc interval : 4s
     public static final long DEFAULT_LOCATION_REQUEST_FAST_INTERVAL = 1000L; // loc fast interval : 2s
     private static final int GPS_UTIL_LOCATION_RESOLUTION_REQUEST_CODE = 101;
-    private final long RECORDING_INTERVAL = 10000L;
+    private final long RECORDING_INTERVAL = 2000;
 
 
     //for step sensors
@@ -90,9 +116,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     //updateThread global values
     List<LogEntity> logs;
     private float maxDistance, totalDistance;
-    private String landMark="",endTime;
+    private String landMark = "", endTime;
     private Location startLoc, endLoc, midLoc;
-
 
 
     //recThread global values
@@ -111,7 +136,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private String farLocationName = "";
 
 
-    private String curLocString ="";
+    private String curLocString = "";
     GetNearByPlaces locator;
     Location globalCurLoc;
     Thread locatorThread;
@@ -119,11 +144,10 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             prevGlobalStep = globalStep;
             globalStep = sensorEvent.values[0];
-        }
-        else if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
+        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
             localStep += sensorEvent.values[0];
         }
     }
@@ -141,13 +165,13 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
             double tmpLo = locationResult.getLastLocation().getLongitude();
             double tmpLa = locationResult.getLastLocation().getLatitude();
 
-            if(tmpLa != 0 && tmpLo != 0) {
+            if (tmpLa != 0 && tmpLo != 0) {
                 curLongitude[coordinateIndex] = tmpLo;
                 curLatitude[coordinateIndex] = tmpLa;
                 ++coordinateIndex;
             }
 
-            if(coordinateIndex > 8)
+            if (coordinateIndex > 8)
                 coordinateIndex = 0;
         }
     };
@@ -190,24 +214,22 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 });
     }
 
-    private class updateThread extends Thread{
+    private class updateThread extends Thread {
         @Override
         public void run() {
-            Log.d("uThread","Start");
+            Log.d("uThread", "Start");
             logs = pDao.getProjectLog(curProject);
             Project project = pDao.getProjectsByID(curProject);
 
-            maxDistance=0;
+            maxDistance = 0;
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            if(logs.size() != 0)
-            {
-                for (int i = 0; i < logs.size(); ++i)
-                {
+            if (logs.size() != 0) {
+                for (int i = 0; i < logs.size(); ++i) {
                     String entityLocationName = "";
 //                double startLo, startLa;
                     LogEntity logEntity = logs.get(i);
@@ -223,12 +245,6 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                                 Log.d("주소찾기 오류", "주소찾기 오류");
                             } else {
                                 Log.d("findAddr", address.get(0).toString());
-
-//                                entityLocationName = address.get(0).getFeatureName();
-//
-//                                entityLocationName = entityLocationName.replaceAll("-", "");
-//                                if (entityLocationName.matches(REGEX))
-//                                    entityLocationName = address.get(0).getThoroughfare();
 
                                 entityLocationName = address.get(0).getThoroughfare() + " " + address.get(0).getFeatureName();
 
@@ -249,6 +265,23 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                         startLoc.setLatitude(logEntity.getLa());
                         startLoc.setLongitude(logEntity.getLo());
                         farLocationName = entityLocationName;
+
+                        String tempName = "";
+                        theLoop: for (int j = 0; j <5; j++){
+                            if(startLoc!=null){
+                                try{
+                                    tempName = locator.getLocString(startLoc);
+                                    break theLoop;
+                                }
+                                catch(Exception e){
+                                }
+                            }
+                            else{
+                                Log.d("error", "CurLoc is null!");
+                            }
+                        }
+                        if(!tempName.equals("")) farLocationName = tempName;
+
                     }
                     if (i == logs.size() - 1) {
                         endTime = logEntity.getLogTime();
@@ -262,10 +295,27 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                         midLoc.setLatitude(logEntity.getLa());
                         midLoc.setLongitude(logEntity.getLo());
                         float tmp = startLoc.distanceTo(midLoc);
-                        if (tmp > maxDistance)
-                        {
+
+
+                        if (tmp > maxDistance) {
                             maxDistance = tmp;
                             farLocationName = entityLocationName;
+
+                            String tempName = "";
+                            theLoop: for (int j = 0; j <5; j++){
+                                if(startLoc!=null){
+                                    try{
+                                        tempName = locator.getLocString(startLoc);
+                                        break theLoop;
+                                    }
+                                    catch(Exception e){
+                                    }
+                                }
+                                else{
+                                    Log.d("error", "CurLoc is null!");
+                                }
+                            }
+                            if(!tempName.equals("")) farLocationName = tempName;
                         }
 
                     }
@@ -279,9 +329,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 newProject.setEveryMovingDistance(movingDistanceSum);
                 newProject.setFarLocName(farLocationName);
                 try {
-                    newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
-                }
-                catch (Exception e){
+                    newProject.setTotalStep(logs.get(logs.size() - 1).getLocalStep());
+                } catch (Exception e) {
                     newProject.setTotalStep(1.0f);
                 }
                 pDao.updProject(newProject);
@@ -289,9 +338,9 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         }
     }
 
-    private class recThread extends Thread{
+    private class recThread extends Thread {
         @Override
-        public void run(){
+        public void run() {
             while (true) {
                 try {
                     Thread.sleep(RECORDING_INTERVAL);
@@ -304,17 +353,15 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     logLongtitude = 0;
 
                     //pass initial wrong values
-                    if(coordinateIndex == 0)
+                    if (coordinateIndex == 0)
                         continue;
-
-                    if(prevLocalStep == localStep)
+//
+                    if (prevLocalStep == localStep)
                         continue;
 
                     int curPos = coordinateIndex;
-                    for(int i = 0 ; i < curPos ; ++i)
-                    {
-                        if(curLatitude[i] != 0 && curLongitude[i] != 0)
-                        {
+                    for (int i = 0; i < curPos; ++i) {
+                        if (curLatitude[i] != 0 && curLongitude[i] != 0) {
                             logLatitude += curLatitude[i];
                             logLongtitude += curLongitude[i];
 
@@ -327,9 +374,9 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     logLongtitude /= curPos;
                     coordinateIndex = 0;
 
-                    Log.d("GPSLoc","FinalLati : "+logLatitude);
-                    Log.d("GPSLoc","FinalLon : "+logLongtitude);
-                    Log.d("GPSLoc","----------------------");
+                    Log.d("GPSLoc", "FinalLati : " + logLatitude);
+                    Log.d("GPSLoc", "FinalLon : " + logLongtitude);
+                    Log.d("GPSLoc", "----------------------");
 
 
                     LogEntity lg = new LogEntity();
@@ -346,11 +393,10 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     pDao.addLog(lg);
 
                     Location prevLoc = new Location("prevLoc");
-                    if(prevLatitude == 0 || prevLongitude == 0){
+                    if (prevLatitude == 0 || prevLongitude == 0) {
                         prevLoc.setLatitude(logLatitude);
                         prevLoc.setLongitude(logLongtitude);
-                    }
-                    else{
+                    } else {
                         prevLoc.setLatitude(prevLatitude);
                         prevLoc.setLongitude(prevLongitude);
                     }
@@ -361,13 +407,13 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
                     movingDistanceSum += prevLoc.distanceTo(curLoc);
 
-                    Log.d("GPSLoc",prevLoc.toString());
-                    Log.d("GPSLoc",curLoc.toString());
+                    Log.d("GPSLoc", prevLoc.toString());
+                    Log.d("GPSLoc", curLoc.toString());
                     Log.d("GPSLoc", String.valueOf(movingDistanceSum));
-                    Log.d("GPSLoc","----------------------");
+                    Log.d("GPSLoc", "----------------------");
 
 
-                    steps.setText( Math.round(localStep) + " Steps");
+                    steps.setText(Math.round(localStep) + " Steps");
                     distance.setText(String.format("%.2f", movingDistanceSum) + " m");
 
 
@@ -375,35 +421,39 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     prevLongitude = logLongtitude;
                     prevLocalStep = localStep;
 
+
                     i_recs++;
-                    if(i_recs >= 10){
-                        curLocString = locator.getLocString(curLoc);
-                        currentLoc.setText(curLocString);
-                        i_recs =0;
+                    String locName = "SEOUL!";
+                    if(i_recs >= 5){
+                        if(curLoc!=null){
+                            locName = locator.getLocString(curLoc);
+                        }
+                        else{
+                            Log.d("error", "CurLoc is null!");
+                        }
+//                        locName = showCurrentPlace();
+                        currentLoc.setText(locName);
+                        i_recs = 0;
                     }
 
-                }
-                else
-                {
+
+                } else {
                     return;
                 }
             }
         }
     }
 
-    Thread getRecThread()
-    {
-        if(rThread == null)
-        {
+    Thread getRecThread() {
+        if (rThread == null) {
             rThread = new recThread();
         }
 
         return rThread;
     }
 
-    protected void endThreadAndUpdate(){
-        if(recoding == true)
-        {
+    protected void endThreadAndUpdate() {
+        if (recoding == true) {
             recoding = false;
             uThread = new updateThread();
             uThread.start();
@@ -432,6 +482,60 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         endThreadAndUpdate();
     }
 
+    private String showCurrentPlace() {
+            resultString = "Seoul!";
+            List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS,
+                    Place.Field.LAT_LNG);
+
+            FindCurrentPlaceRequest request =
+                    FindCurrentPlaceRequest.newInstance(placeFields);
+
+            @SuppressWarnings("MissingPermission") final
+            Task<FindCurrentPlaceResponse> placeResult =
+                    placesClient.findCurrentPlace(request);
+            placeResult.addOnCompleteListener (new OnCompleteListener<FindCurrentPlaceResponse>() {
+                @Override
+                public void onComplete(@NonNull Task<FindCurrentPlaceResponse> task) {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        FindCurrentPlaceResponse likelyPlaces = task.getResult();
+                        // Set the count, handling cases where less than 5 entries are returned.
+                        int count;
+                        if (likelyPlaces.getPlaceLikelihoods().size() < 1) {
+                            count = likelyPlaces.getPlaceLikelihoods().size();
+                        } else {
+                            count = 1;
+                        }
+
+                        int i = 0;
+                        likelyPlaceNames = new String[count];
+                        likelyPlaceAddresses = new String[count];
+                        likelyPlaceAttributions = new List[count];
+                        likelyPlaceLatLngs = new LatLng[count];
+
+                        for (PlaceLikelihood placeLikelihood : likelyPlaces.getPlaceLikelihoods()) {
+                            // Build a list of likely places to show the user.
+                            likelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
+                            likelyPlaceAddresses[i] = placeLikelihood.getPlace().getAddress();
+                            likelyPlaceAttributions[i] = placeLikelihood.getPlace()
+                                    .getAttributions();
+                            likelyPlaceLatLngs[i] = placeLikelihood.getPlace().getLatLng();
+
+                            i++;
+                            if (i > (count - 1)) {
+                                resultString = likelyPlaceNames[0];
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        Log.e(TAG, "Exception: %s", task.getException());
+                    }
+                }
+
+            });
+        return resultString;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -454,6 +558,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         takePhotoButton = findViewById(R.id.takePhoto);
         takeSelfieButton = findViewById(R.id.takeSelfie);
         currentLoc = findViewById(R.id.currentLoc);
+
+        locator = new GetNearByPlaces();
 
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -503,19 +609,38 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
         if (stepCountSensor == null) {
 //            Toast.makeText(getContext(), "No Step Counter Sensor", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST);
         }
 
         if (stepDetectorSensor == null) {
 //            Toast.makeText(getContext(), "No Step Detector Sensor", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            sensorManager.registerListener(this,stepDetectorSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
         }
 
         g = new Geocoder(this);
+
+        try{
+            @SuppressWarnings("MissingPermission") final Task<FindCurrentPlaceResponse> placeResult;
+            Places.initialize(getApplicationContext(), getString(R.string.gmap_api_key), Locale.US);
+            placesClient = Places.createClient(this);
+
+            placeFields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS,
+                    Place.Field.LAT_LNG);
+
+            request =
+                    FindCurrentPlaceRequest.newInstance(placeFields);
+
+            Log.d("====", "PlacesInit SUCCESS");
+
+        }
+        catch (Exception e){
+            Log.d("====", "PlacesInit Failed");
+        }
+
+
+
 
         //start recThread
         localStep = 0;

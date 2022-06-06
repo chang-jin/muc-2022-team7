@@ -1,22 +1,14 @@
 package com.snu.muc.dogeeye.ui.logs;
 
-import androidx.annotation.NonNull;
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
-import com.snu.muc.dogeeye.databinding.ActivityLogsBinding;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;

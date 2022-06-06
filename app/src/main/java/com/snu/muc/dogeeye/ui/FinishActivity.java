@@ -7,15 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -31,27 +25,20 @@ import com.google.android.gms.games.PlayGames;
 import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.common.Logger;
+import com.snu.muc.dogeeye.common.PhotoStamp;
 import com.snu.muc.dogeeye.common.QuestChecker;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
-import com.snu.muc.dogeeye.common.PhotoStamp;
 import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.PhotoEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.model.Quest;
-import com.snu.muc.dogeeye.ui.logs.logEntity;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class FinishActivity extends AppCompatActivity {

@@ -82,4 +82,6 @@
     <string name="sug0_link">https://gil.seoul.go.kr/walk/course/dulae_gil.jsp?c_idx=248</string>
     <string name="sug1_link">https://gil.seoul.go.kr/m/course/dulae_gil_view.jsp?course=3000&amp;c_idx=262</string>
     <string name="sug2_link">https://gil.seoul.go.kr/m/course/dulae_gil_view.jsp?course=3000&amp;c_idx=282</string>
+
+    <string name="gmap_api_key">AIzaSyDt29SvRevnSbqqreEtybuMVuZJL0EwN7s</string>
 </resources>

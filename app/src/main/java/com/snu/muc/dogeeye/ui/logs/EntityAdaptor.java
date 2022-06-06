@@ -2,7 +2,6 @@ package com.snu.muc.dogeeye.ui.logs;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.snu.muc.dogeeye.model.ProjectDao;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -153,8 +151,28 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((ViewHolderLog) holder).initialPos = lgEntity.getActivityNumber()+1;
             ((ViewHolderLog) holder).pid = project.getId();
             ((ViewHolderLog) holder).timeStamp.setText(String.valueOf(lgEntity.getStartTimeRev()));
-            ((ViewHolderLog) holder).startLoc.setText(project.getFarLocName()+"\n "+ project.getTotalStep() + " Steps");
+            int steps = (int) project.getTotalStep();
+            String far = project.getFarLocName();
+
+            try{
+                String[] tmp = project.getAddress().split("_");
+                String descr = "";
+                descr += steps;
+                descr += " steps to " + far;
+
+
+                ((ViewHolderLog) holder).startLoc.setText(descr);
+
+
+            }catch (Exception e){
+                // String descr = "";
+                // descr += " steps to ";
+
+                // ((ViewHolderLog) holder).startLoc.setText(descr);
+//                ((ViewHolderLog) holder).endLoc.setText("Failed Log");
+            }
         }
+
         else if(lgEntity.getType() == 1)
         {
             ((ViewHolderDiv) holder).date.setText(lgEntity.getDate());
