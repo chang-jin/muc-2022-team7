@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,8 +20,10 @@ import com.google.android.gms.games.GamesSignInClient;
 import com.google.android.gms.games.PlayGames;
 import com.google.android.gms.games.PlayGamesSdk;
 import com.snu.muc.dogeeye.common.Logger;
+import com.snu.muc.dogeeye.common.QuestChecker;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
+import com.snu.muc.dogeeye.model.Quest;
 import com.snu.muc.dogeeye.ui.GalleryActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
 import com.snu.muc.dogeeye.ui.TestActivity;
@@ -68,14 +72,27 @@ public class MainActivity extends AppCompatActivity {
         int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
         prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
         // Check for first run or upgrade
+
         if (currentVersionCode == savedVersionCode) {
             // This is just a normal run
+            Toast.makeText(this,"This is a normal run",Toast.LENGTH_LONG).show();
+            Log.d("checkIfFirstRun", "This is a normal run");
+
             return false;
 
         } else if (savedVersionCode == DOESNT_EXIST) {
+            Toast.makeText(this,"This is the first run!",Toast.LENGTH_LONG).show();
+            Log.d("checkIfFirstRun", "this is the first run");
+
+            log.d("Achieved = achievement_the_first_launch");
+            PlayGames.getAchievementsClient(this).unlock("TODO:FIX THE ID");
+            log.d("Achieved = achievement_the_first_launch");
+
+
             return true;
             // TODO This is a new install (or the user cleared the shared preferences)
         } else if (currentVersionCode > savedVersionCode) {
+            Toast.makeText(this,"This is an updated run",Toast.LENGTH_LONG).show();
             return false;
         }
         return false;
@@ -118,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        checkIfFirstRun();
         super.onCreate(savedInstanceState);
 
         mTTSModule = TextSpeechModule.getInstance();

@@ -17,6 +17,7 @@
         android:text="Current Walk"
         android:layout_gravity="center"
         android:textColor="@color/black"
+        android:textAllCaps="true"
 
         android:textSize= "30sp"
 
@@ -26,9 +27,9 @@
         android:id="@+id/totalStep"
 
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="20dp"
+        android:layout_marginVertical="5dp"
 
         android:clickable="false"
         android:text="Initializing..."
@@ -46,9 +47,9 @@
         android:id="@+id/totalDistance"
 
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="20dp"
+        android:layout_marginVertical="5dp"
 
         android:clickable="false"
         android:textStyle="bold"
@@ -62,7 +63,26 @@
         app:layout_constraintBottom_toTopOf="@+id/takePhoto"
         />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/currentLoc"
 
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+
+        android:clickable="false"
+        android:textStyle="bold"
+        android:textSize="15sp"
+
+        android:text="Seoul National University"
+
+
+        android:background="@drawable/view_grey200"
+
+        app:layout_constraintBottom_toTopOf="@+id/takePhoto"
+        />
 
 
 

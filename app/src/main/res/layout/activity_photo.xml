@@ -21,23 +21,25 @@
         <TextView
             android:id="@+id/captionView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="10dp"
 
             android:textAlignment="center"
             android:textSize="30sp"
+            android:textColor="@color/black"
             tools:ignore="MissingConstraints"
-            android:background="@drawable/view_magenta0" />
+            android:background="@drawable/view_grey200" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/captureButton"
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             android:textSize="40sp"
             android:text="Capture"
+            android:textColor="@color/white"
             android:background="@drawable/view_magenta0"
             tools:ignore="MissingConstraints" />
     </LinearLayout>
