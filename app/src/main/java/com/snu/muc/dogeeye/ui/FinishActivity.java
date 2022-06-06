@@ -79,7 +79,7 @@ public class FinishActivity extends AppCompatActivity {
         TextView tvStep = findViewById(R.id.totalStep);
         tvStep.setText(String.format("%d steps", (int) current.getTotalStep()));
         TextView tvDistance = findViewById(R.id.totalDistance);
-        tvDistance.setText(String.format("%s KM", current.getEveryMovingDistance()));
+        tvDistance.setText(String.format("%s M", String.format("%.2f", current.getEveryMovingDistance())));
 
         // Photo Container Setup
         List<PhotoEntity> photos = projectDao.getPhotoEntities(currentProjectId);
@@ -170,7 +170,7 @@ public class FinishActivity extends AppCompatActivity {
         sb.append(String.format("Today, you have walked %d steps in total.", steps));
 
         // 정보 2. 오늘 총 걸은 거리
-        sb.append(String.format("And, you have walked a total distance of %s kilometers today.", distance));
+        sb.append(String.format("And, you have walked a total distance of %s meters today.", String.format("%.2f", distance)));
 
         // 정보 3. 오늘 찍은 사진
         if (photoSize != 0) {
