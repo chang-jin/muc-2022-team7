@@ -61,4 +61,7 @@ public interface ProjectDao {
 
     @Query("select * from PhotoEntity where PID = :id")
     List<PhotoEntity> getPhotoEntities(int id);
+
+    @Query("select * from PhotoEntity")
+    List<PhotoEntity> getAllPhotos();
 }

@@ -9,6 +9,7 @@ import android.location.Location;
 
 import com.snu.muc.dogeeye.R;
 import com.snu.muc.dogeeye.model.LogEntity;
+import com.snu.muc.dogeeye.model.PhotoEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
@@ -100,15 +101,26 @@ public class QuestChecker {
             }
         }
 
+        List<PhotoEntity> photos = projectDao.getAllPhotos();
+        int photosNum = 0;
+        int selfiesNum = 0;
+        for (int i = 0; i < photos.size(); i++) {
+            if (photos.get(i).getFacing() == 1) {
+                photosNum++;
+            } else {
+                selfiesNum++;
+            }
+        }
+
         // Check Photographer
-        if (false) {
+        if (photosNum >= 100) {
             interestingQuests.add(new Quest(mContext.getString(R.string.achievement_photographer),
                     "Photographer", "Take 100 Photos"));
             log.d("Achieved = achievement_photographer");
         }
 
         // Check Love Yourself
-        if (false) {
+        if (selfiesNum >= 100) {
             interestingQuests.add(new Quest(mContext.getString(R.string.achievement_love_yourself),
                     "Love Yourself", "Take 100 Selfies"));
             log.d("Achieved = achievement_love_yourself");
