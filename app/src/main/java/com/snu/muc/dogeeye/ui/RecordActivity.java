@@ -35,6 +35,7 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.snu.muc.dogeeye.MainActivity;
+import com.snu.muc.dogeeye.common.GetNearByPlaces;
 import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
@@ -59,6 +60,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     Button finish;
     Button steps;
     Button distance;
+
+    Button currentLoc;
     Button takePhotoButton;
     Button takeSelfieButton;
 
@@ -106,6 +109,12 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
     final String REGEX = "[0-9]+";
 
+
+    private String curLocString ="";
+    GetNearByPlaces locator;
+    Location globalCurLoc;
+    Thread locatorThread;
+    private int i_recs;
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -356,6 +365,13 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                     prevLongitude = logLongtitude;
                     prevLocalStep = localStep;
 
+                    i_recs++;
+                    if(i_recs >= 10){
+                        curLocString = locator.getLocString(curLoc);
+                        currentLoc.setText(curLocString);
+                        i_recs =0;
+                    }
+
                 }
                 else
                 {
@@ -412,6 +428,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         distance = findViewById(R.id.totalDistance);
         takePhotoButton = findViewById(R.id.takePhoto);
         takeSelfieButton = findViewById(R.id.takeSelfie);
+        currentLoc = findViewById(R.id.currentLoc);
+
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
