@@ -79,7 +79,7 @@ public class FinishActivity extends AppCompatActivity {
         TextView tvStep = findViewById(R.id.totalStep);
         tvStep.setText(String.format("%d steps", (int) current.getTotalStep()));
         TextView tvDistance = findViewById(R.id.totalDistance);
-        tvDistance.setText(String.format("%s M", String.format("%.2f", current.getEveryMovingDistance())));
+        tvDistance.setText(String.format("%.2f M", current.getEveryMovingDistance()));
 
         // Photo Container Setup
         List<PhotoEntity> photos = projectDao.getPhotoEntities(currentProjectId);
@@ -113,24 +113,31 @@ public class FinishActivity extends AppCompatActivity {
         speakDailySummary((int) current.getTotalStep(), current.getEveryMovingDistance(), 0, achieved.size());
     }
 
-    private void shareTheWalk(Project current, List<PhotoEntity> photos) {
-        Bitmap imageToShare;
-
+    private Bitmap getImageToShare(List<PhotoEntity> photos) {
         if (photos.isEmpty()) {
             Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
-            imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
+            return Bitmap.createScaledBitmap(target, 1000, 1000, false);
         } else {
-            // First picture of the project
-            // TODO: check how to get drawable of the photo file
-            String image = photos.get(0).getFilePath();
-            Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
-            imageToShare = Bitmap.createScaledBitmap(target, 1000, 1000, false);
+            String imagePath = photos.get(0).getFilePath();
+            String fileName = photos.get(0).getFileName();
+
+            File imgFile = new File(imagePath + File.separator + fileName);
+            if (imgFile.exists()) {
+                Bitmap target = BitmapFactory.decodeFile(imgFile.getAbsolutePath()).copy(Bitmap.Config.ARGB_8888, true);
+                return Bitmap.createScaledBitmap(target, 1000, 1000, false);
+            } else {
+                Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
+                return Bitmap.createScaledBitmap(target, 1000, 1000, false);
+            }
         }
+    }
+
+    private void shareTheWalk(Project current, List<PhotoEntity> photos) {
+        Bitmap imageToShare = getImageToShare(photos);
+
         PhotoStamp stamper = new PhotoStamp();
         stamper.stamp_random(imageToShare, current);
 
-//        imageToShare = stamper.stamp(imageToShare, current.getEveryMovingDistance());
-//
         // Share the image through
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/jpeg");
