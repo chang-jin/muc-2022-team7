@@ -23,6 +23,16 @@ public class Project {
 
     private float start2MaxDistance;
 
+    public String getFarLocName() {
+        return farLocName;
+    }
+
+    public void setFarLocName(String farLocName) {
+        this.farLocName = farLocName;
+    }
+
+    private String farLocName;
+
     public int getId() {
         return id;
     }

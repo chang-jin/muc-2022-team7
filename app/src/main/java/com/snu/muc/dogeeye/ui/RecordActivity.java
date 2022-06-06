@@ -108,6 +108,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     private float movingDistanceSum;
 
     final String REGEX = "[0-9]+";
+    private String farLocationName = "";
 
 
     private String curLocString ="";
@@ -245,6 +246,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                         startLoc = new Location("start");
                         startLoc.setLatitude(logEntity.getLa());
                         startLoc.setLongitude(logEntity.getLo());
+                        farLocationName = entityLocationName;
                     }
                     if (i == logs.size() - 1) {
                         endTime = logEntity.getLogTime();
@@ -259,7 +261,11 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                         midLoc.setLongitude(logEntity.getLo());
                         float tmp = startLoc.distanceTo(midLoc);
                         if (tmp > maxDistance)
+                        {
                             maxDistance = tmp;
+                            farLocationName = entityLocationName;
+                        }
+
                     }
                 }
                 Project newProject = new Project();
@@ -269,6 +275,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 newProject.setStart2MaxDistance(maxDistance);
                 newProject.setAddress(landMark);
                 newProject.setEveryMovingDistance(movingDistanceSum);
+                newProject.setFarLocName(farLocationName);
                 try {
                     newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
                 }
@@ -436,6 +443,8 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
 
         prevLatitude = 0;
         prevLongitude = 0;
+
+        farLocationName = "";
 
         finish = findViewById(R.id.finish);
         steps = findViewById(R.id.totalStep);
