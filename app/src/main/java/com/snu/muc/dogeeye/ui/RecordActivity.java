@@ -224,11 +224,13 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                             } else {
                                 Log.d("findAddr", address.get(0).toString());
 
-                                entityLocationName = address.get(0).getFeatureName();
+//                                entityLocationName = address.get(0).getFeatureName();
+//
+//                                entityLocationName = entityLocationName.replaceAll("-", "");
+//                                if (entityLocationName.matches(REGEX))
+//                                    entityLocationName = address.get(0).getThoroughfare();
 
-                                entityLocationName = entityLocationName.replaceAll("-", "");
-                                if (entityLocationName.matches(REGEX))
-                                    entityLocationName = address.get(0).getThoroughfare();
+                                entityLocationName = address.get(0).getThoroughfare() + " " + address.get(0).getFeatureName();
 
                                 LogEntity newLog = new LogEntity();
                                 newLog.copyEntity(logEntity);
