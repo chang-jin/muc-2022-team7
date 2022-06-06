@@ -99,10 +99,7 @@ public class detailLogs extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(50);
-
                 recyclerView.scrollToPosition(i);
-
-                Log.d("bar", "onProgressChanged: " + i);
             }
 
             @Override

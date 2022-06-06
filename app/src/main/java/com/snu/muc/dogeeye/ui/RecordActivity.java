@@ -203,79 +203,80 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
                 e.printStackTrace();
             }
 
-            for(int i = 0 ; i < logs.size() ; ++i){
-                String entityLocationName="";
+            if(logs.size() != 0)
+            {
+                for (int i = 0; i < logs.size(); ++i)
+                {
+                    String entityLocationName = "";
 //                double startLo, startLa;
-                LogEntity logEntity=logs.get(i);
+                    LogEntity logEntity = logs.get(i);
 
 
-                Log.d("uThread","working...");
-                List<Address> address;
-                try {
-                    address = g.getFromLocation(logEntity.getLa(),logEntity.getLo(),10);
+                    Log.d("uThread", "working...");
+                    List<Address> address;
+                    try {
+                        address = g.getFromLocation(logEntity.getLa(), logEntity.getLo(), 10);
 
-                    if(address!=null) {
-                        if (address.size() == 0) {
-                            Log.d("주소찾기 오류","주소찾기 오류");
-                        } else {
-                            Log.d("findAddr", address.get(0).toString());
+                        if (address != null) {
+                            if (address.size() == 0) {
+                                Log.d("주소찾기 오류", "주소찾기 오류");
+                            } else {
+                                Log.d("findAddr", address.get(0).toString());
 
-                            entityLocationName = address.get(0).getFeatureName();
+                                entityLocationName = address.get(0).getFeatureName();
 
-                            entityLocationName = entityLocationName.replaceAll("-","");
-                            if(entityLocationName.matches(REGEX))
-                                entityLocationName = address.get(0).getThoroughfare();
+                                entityLocationName = entityLocationName.replaceAll("-", "");
+                                if (entityLocationName.matches(REGEX))
+                                    entityLocationName = address.get(0).getThoroughfare();
 
-                            LogEntity newLog = new LogEntity();
-                            newLog.copyEntity(logEntity);
-                            newLog.setLocName(entityLocationName);
-                            pDao.updLog(newLog);
+                                LogEntity newLog = new LogEntity();
+                                newLog.copyEntity(logEntity);
+                                newLog.setLocName(entityLocationName);
+                                pDao.updLog(newLog);
+                            }
                         }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    if (i == 0) {
+                        landMark += "_" + entityLocationName;
+                        startLoc = new Location("start");
+                        startLoc.setLatitude(logEntity.getLa());
+                        startLoc.setLongitude(logEntity.getLo());
+                    }
+                    if (i == logs.size() - 1) {
+                        endTime = logEntity.getLogTime();
+                        landMark += "_" + entityLocationName;
+                        endLoc = new Location("end");
+                        endLoc.setLatitude(logEntity.getLa());
+                        endLoc.setLongitude(logEntity.getLo());
+                        totalDistance = startLoc.distanceTo(endLoc);
+                    } else {
+                        midLoc = new Location("mid");
+                        midLoc.setLatitude(logEntity.getLa());
+                        midLoc.setLongitude(logEntity.getLo());
+                        float tmp = startLoc.distanceTo(midLoc);
+                        if (tmp > maxDistance)
+                            maxDistance = tmp;
+                    }
                 }
-
-                if(i == 0){
-                    landMark+="_"+entityLocationName;
-                    startLoc = new Location("start");
-                    startLoc.setLatitude(logEntity.getLa());
-                    startLoc.setLongitude(logEntity.getLo());
+                Project newProject = new Project();
+                newProject.copyProject(project);
+                newProject.setEndTime(endTime);
+                newProject.setStart2EndDistance(totalDistance);
+                newProject.setStart2MaxDistance(maxDistance);
+                newProject.setAddress(landMark);
+                newProject.setEveryMovingDistance(movingDistanceSum);
+                try {
+                    newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
                 }
-                else if(i == logs.size() -1){
-                    endTime = logEntity.getLogTime();
-                    landMark+="_"+entityLocationName;
-                    endLoc = new Location("end");
-                    endLoc.setLatitude(logEntity.getLa());
-                    endLoc.setLongitude(logEntity.getLo());
-                    totalDistance = startLoc.distanceTo(endLoc);
+                catch (Exception e){
+                    newProject.setTotalStep(1.0f);
                 }
-                else
-                {
-                    midLoc = new Location("mid");
-                    midLoc.setLatitude(logEntity.getLa());
-                    midLoc.setLongitude(logEntity.getLo());
-                    float tmp = startLoc.distanceTo(midLoc);
-                    if(tmp > maxDistance)
-                        maxDistance = tmp;
-                }
+                pDao.updProject(newProject);
             }
-
-            Project newProject = new Project();
-            newProject.copyProject(project);
-            newProject.setEndTime(endTime);
-            newProject.setStart2EndDistance(totalDistance);
-            newProject.setStart2MaxDistance(maxDistance);
-            newProject.setAddress(landMark);
-            newProject.setEveryMovingDistance(movingDistanceSum);
-            try {
-                newProject.setTotalStep(logs.get(logs.size()-1).getLocalStep());
-            }
-            catch (Exception e){
-                newProject.setTotalStep(1.0f);
-            }
-            pDao.updProject(newProject);
         }
     }
 
@@ -391,6 +392,26 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
         return rThread;
     }
 
+    protected void endThreadAndUpdate(){
+        if(recoding == true)
+        {
+            recoding = false;
+            uThread = new updateThread();
+            uThread.start();
+            try {
+                uThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        endThreadAndUpdate();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -399,14 +420,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        recoding = false;
-        uThread = new updateThread();
-        uThread.start();
-        try {
-            uThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        endThreadAndUpdate();
     }
 
     @Override
@@ -434,14 +448,7 @@ public class RecordActivity extends AppCompatActivity implements SensorEventList
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "stopThread", Toast.LENGTH_LONG).show();
-                recoding = false;
-                uThread = new updateThread();
-                uThread.start();
-                try {
-                    uThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                endThreadAndUpdate();
                 Intent intent = new Intent(RecordActivity.this, FinishActivity.class);
                 intent.putExtra("currentProjectId", curProject);
                 startActivity(intent);

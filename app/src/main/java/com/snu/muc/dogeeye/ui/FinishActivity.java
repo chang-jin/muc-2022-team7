@@ -15,6 +15,7 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -32,11 +33,13 @@ import com.snu.muc.dogeeye.common.Logger;
 import com.snu.muc.dogeeye.common.QuestChecker;
 import com.snu.muc.dogeeye.common.TextSpeechModule;
 import com.snu.muc.dogeeye.common.PhotoStamp;
+import com.snu.muc.dogeeye.model.LogEntity;
 import com.snu.muc.dogeeye.model.PhotoEntity;
 import com.snu.muc.dogeeye.model.Project;
 import com.snu.muc.dogeeye.model.ProjectDB;
 import com.snu.muc.dogeeye.model.ProjectDao;
 import com.snu.muc.dogeeye.model.Quest;
+import com.snu.muc.dogeeye.ui.logs.logEntity;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -46,6 +49,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +73,8 @@ public class FinishActivity extends AppCompatActivity {
         projectDb = ProjectDB.getProjectDB(this);
         projectDao = projectDb.projectDao();
         Project current = projectDao.getProjectsByID(currentProjectId);
+
+        List<LogEntity> logs = projectDao.getProjectLog(currentProjectId);
 
         finish = findViewById(R.id.finish);
         finish.setOnClickListener(view -> {
@@ -112,6 +118,13 @@ public class FinishActivity extends AppCompatActivity {
 
         // Daily Summary
         speakDailySummary((int) current.getTotalStep(), current.getEveryMovingDistance(), 0, achieved.size());
+
+        // delete empty log activity
+        if(logs.size() == 0){
+            Project newProject = new Project();
+            newProject.copyProject(current);
+            projectDao.delProject(newProject);
+        }
     }
 
     private Bitmap getImageToShare(List<PhotoEntity> photos) {
