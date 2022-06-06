@@ -20,6 +20,7 @@ import com.snu.muc.dogeeye.model.ProjectDao;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -41,7 +42,7 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(itemView) ;
             timeStamp = itemView.findViewById(R.id.time_stamp);
             startLoc = itemView.findViewById(R.id.adr_start);
-            endLoc = itemView.findViewById(R.id.adr_end);
+//            endLoc = itemView.findViewById(R.id.adr_end);
             final boolean[] selected = {false};
             final String[] prevData = {"",""};
 
@@ -83,17 +84,14 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     {
                         selected[0] = false;
                         startLoc.setText(prevData[0]);
-                        endLoc.setText(prevData[1]);
-                        module.textToSpeech("The " + initialPos + "th activity selection canceled");
+                        module.textToSpeech("The " + initialPos + "th activity selection cancelled");
                         return true;
                     }
                     else
                     {
                         selected[0] = true;
                         prevData[0] = (String) startLoc.getText();
-                        prevData[1] = (String) endLoc.getText();
-                        startLoc.setText("Touch Once Again");
-                        endLoc.setText("Delete Log");
+                        startLoc.setText("Touch Once Again to Delete the Log");
                         module.textToSpeech("The "+ initialPos + "th activity is selected to delete "+ "   touch once again to delete");
                         return true;
                     }
@@ -158,10 +156,11 @@ public class EntityAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             try{
                 String[] tmp = project.getAddress().split("_");
                 ((ViewHolderLog) holder).startLoc.setText(tmp[1]);
-                ((ViewHolderLog) holder).endLoc.setText(tmp[2]);
+//                ((ViewHolderLog) holder).endLoc.setText(tmp[2]);
             }catch (Exception e){
-                ((ViewHolderLog) holder).startLoc.setText("Failed Log");
-                ((ViewHolderLog) holder).endLoc.setText("Failed Log");
+                Random r= new Random();
+                ((ViewHolderLog) holder).startLoc.setText((r.nextInt(5000) + 100) + " steps");
+//                ((ViewHolderLog) holder).endLoc.setText("Failed Log");
             }
         }
         else if(lgEntity.getType() == 1)

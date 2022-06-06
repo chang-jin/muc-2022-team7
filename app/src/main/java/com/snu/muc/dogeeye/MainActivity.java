@@ -27,7 +27,7 @@ import com.snu.muc.dogeeye.model.Quest;
 import com.snu.muc.dogeeye.ui.GalleryActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
 import com.snu.muc.dogeeye.ui.SuggestActivity;
-import com.snu.muc.dogeeye.ui.TestActivity;
+
 import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
 import java.util.Locale;

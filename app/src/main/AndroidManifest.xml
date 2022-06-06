@@ -35,9 +35,6 @@
             android:name=".ui.FinishActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.TestActivity"
-            android:exported="false" />
 
 
         <activity

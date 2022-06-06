@@ -9,33 +9,38 @@
 
 
 
-    <Button
-        android:id="@+id/back_main"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_margin="20dp"
-        android:background="@drawable/button_blue0"
-        android:text="BACK"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:backgroundTint="@null" />
+<!--    <Button-->
+<!--        android:id="@+id/back_main"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:background="@drawable/button_blue0"-->
+<!--        android:text="BACK"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="24sp"-->
+<!--        app:backgroundTint="@null" />-->
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Recording List"
-        android:gravity="center">
+        android:text="Records"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:textSize="40dp"
+        android:layout_marginTop="20dp"
+        >
     </TextView>
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="20dp"
+        android:layout_marginVertical="10dp"
         android:id="@+id/rv"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        />
 
 
 

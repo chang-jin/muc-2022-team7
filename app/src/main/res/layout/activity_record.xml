@@ -55,7 +55,7 @@
         android:textStyle="bold"
         android:textSize="25sp"
 
-        android:text="# KM"
+        android:text="# M"
 
 
         android:background="@drawable/view_grey200"

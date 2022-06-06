@@ -37,14 +37,14 @@ public class logsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logs);
 
-        Button button = findViewById(R.id.back_main);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(logsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button button = findViewById(R.id.back_main);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(logsActivity.this, MainActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         pdb = ProjectDB.getProjectDB(this);
         pDao = pdb.projectDao();
