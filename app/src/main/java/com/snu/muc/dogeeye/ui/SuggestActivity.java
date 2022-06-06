@@ -2,12 +2,31 @@ package com.snu.muc.dogeeye.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
+import com.snu.muc.dogeeye.MainActivity;
 import com.snu.muc.dogeeye.R;
+import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
+import com.snu.muc.dogeeye.databinding.ActivitySuggestBinding;
 
 public class SuggestActivity extends AppCompatActivity {
+
+ int totalSug = 3;
+ String[] sugName = new String[totalSug];
+ String[] sugDescription = new String[totalSug];
+ String[] sugLink = new String[totalSug];
+ String[] sugGood = new String[totalSug];
+ String[] sugBad = new String[totalSug];
+ String[] sugPhotoPath = new String[totalSug];
+
+ private ActivitySuggestBinding binding;
+ boolean sug0_expand = false;
+ boolean sug1_expand = false;
+ boolean sug2_expand = false;
+
 
  String givenURL = "";
  Intent goToWebPageIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(givenURL));
@@ -16,26 +35,83 @@ public class SuggestActivity extends AppCompatActivity {
 
  @Override
  protected void onCreate(Bundle savedInstanceState){
+
+  Intent sug0WebIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getString(R.string.sug0_link)));
+  Intent sug1WebIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getString(R.string.sug1_link)));
+  Intent sug2WebIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getString(R.string.sug2_link)));
+
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_suggest);
+  binding = ActivitySuggestBinding.inflate(getLayoutInflater());
+  setContentView(binding.getRoot());
+
+  binding.sug0Img.setOnClickListener(view -> {
+   startActivity(sug0WebIntent);
+  });
+
+  binding.sug1Img.setOnClickListener(view -> {
+   startActivity(sug1WebIntent);
+  });
+
+  binding.sug2Img.setOnClickListener(view -> {
+   startActivity(sug2WebIntent);
+  });
+
+
+  AppCompatButton sug0Tv = binding.sug0Text;
+  AppCompatButton sug1Tv = binding.sug1Text;
+  AppCompatButton sug2Tv = binding.sug2Text;
+
+  binding.sug0Text.setOnClickListener(view -> {
+   if(sug0_expand){
+    sug0Tv.setText(this.getString(R.string.sug0_click));
+    sug0_expand = false;
+   }
+   else{
+    sug0Tv.setText(this.getString(R.string.sug0));
+    sug0_expand = true;
+    sug1_expand = false;
+    sug2_expand = false;
+    sug1Tv.setText(this.getString(R.string.sug1_click));
+    sug2Tv.setText(this.getString(R.string.sug2_click));
+   }
+  });
+
+
+  binding.sug1Text.setOnClickListener(view -> {
+   if(sug1_expand){
+    sug1Tv.setText(this.getString(R.string.sug1_click));
+    sug1_expand = false;
+   }
+   else{
+    sug1Tv.setText(this.getString(R.string.sug1));
+    sug1_expand = true;
+    sug0_expand = false;
+    sug2_expand = false;
+    sug0Tv.setText(this.getString(R.string.sug0_click));
+    sug2Tv.setText(this.getString(R.string.sug2_click));
+   }
+  });
+
+
+  binding.sug2Text.setOnClickListener(view -> {
+   if(sug2_expand){
+    sug2Tv.setText(this.getString(R.string.sug2_click));
+    sug2_expand = false;
+   }
+   else{
+    sug2Tv.setText(this.getString(R.string.sug2));
+    sug2_expand = true;
+    sug0_expand = false;
+    sug1_expand = false;
+    sug0Tv.setText(this.getString(R.string.sug0_click));
+    sug1Tv.setText(this.getString(R.string.sug1_click));
+   }
+  });
+
+
 
  }
 
 
 
 }
-/*
-
- * 안전하게 거닐 수 있는 운치 가득한 남산순환나들길
-         서울의 허파, 남산의 가을을 만끽할 수 있는 길이다. 케이블카 승강장을 지나 올라가다 보면 남산공원 방향 횡단보도가 나오는데, 그곳을 건너면 쉽게 무장애길에 진입할 수 있다. 횡단보도에는 음성신호기가 설치되어 있고, 점자 유도블록으로 산책로까지의 진로를 안내하고 있다. 물론 남산순환나들길 내부에도 점자 유도블록이 완비되어 있다. 그를 따라 걷다 보면 맑은 물소리가 귓가를 흐른다. 은은한 나무 향기와 함께 가을의 운치를 더하는 자연의 효과음이다.
-         이 길은 오직 사람을 위한 구간이다. 차는 물론 자전거도 다닐 수 없다. 그렇기에 특히 시각장애인이 안심하고 거닐 수 있다. 실제 걸어본 결과, 안전도가 매우 높았다. 이 길은 본래 자동차가 다니던 도로였으나 1991년 서울시가 산책길로 바꿨다. 그 덕에 휠체어 두세 대가 나란히 지나갈 수 있을 정도로 폭이 넉넉하다. 또 휠체어 보행자를 위한 전망대도 있어 소외감 없이 경관을 감상할 수도 있다. 장애인 화장실도 구비되어 있다. 야경 감상을 목적으로 한다면 밤에 거닐어도 좋다. 단지 숲이 우거져 가로등의 밝기가 부족할 수 있다. 완주하는 데 대략 1시간 남짓이며 와룡묘, 남산 한옥마을 입구, 국립극장 등을 잇는 3.4km 코스라 산책뿐 아니라 일상의 나들이를 즐기기에도 좋다.
-         * 최초 무장애탐방로의 역사만큼 장거리 산책, 서대문 안산자락길
-         안산 둘레를 따라 조성된 무장애 순환탐방로다. 이진아기념도서관, 독립공원 등을 탐방로를 찾기 위한 랜드마크로 안내하고 있지만, ‘서대문유스센터’를 기준으로 삼는 것이 더 편리하다. 물론 무장애 탐방로로 진입하기도 수월하다. 길 초입에 대여소가 있어 필요하다면 휠체어나 유모차를 무료로 빌릴 수 있다. 길의 경사는 전체적으로 매우 완만하다. 천천히 거닐며 서울 시내 곳곳을 조망하는 여유를 만끽해도 좋을 것이다. 장애인 화장실과 전동휠체어 충전 장소 등의 편의시설도 구비되어 있다.
-         단지 아쉬운 부분이 몇 가지 있다. 첫째는 탐방로 초반의 정비 미흡이다. 길이 바로 데크로드가 시작되는 건 아니고 아스팔트 포장 도로가 먼저 나온다. 그러나 나뭇가지와 낙엽 등으로 어지러워 장애인 보행에 다소 지장이 있다. 꽤 굵은 나뭇가지도 심심치 않게 있으니 주의가 필요하다. 둘째는 차량의 위협이다. 분명 초입에 ‘보행자 전용도로’라는 표지가 있음에도 불구하고 이따금 오토바이가 지나가곤 한다. 또한 몇몇 구간의 전망대는 휠체어 접근이 어렵다는 점도 아쉬움으로 남는다. 거리는 7km이며 완주에는 대략 2시간 30분 정도가 걸린다. 장거리 코스인 만큼 곳곳에 쉼터가 마련되어 있으니 참고하면 좋다.
-         * 숲을 벗 삼은 체험길, 배봉산 무장애 숲길
-         동대문구 전농동과 중랑구, 휘경동에 걸쳐 있는 배봉산에 위치한 숲길이다. 2013년부터 무장애길 사업을 추진해 4.5km에 힐링 코스로 완성되었다. 코스가 여럿이라 시간과 체력 여건에 맞게 선택할 수 있다. 단지 점자 안내판이 없어 시각장애인은 동행인이 꼭 필요하다. 전동초등학교 앞에서 진입하면 어렵지 않게 무장애 숲길에 들어설 수 있다. 휠체어 보행자의 경우 연육교 방향에서 진입하면 수월하다. 경사는 완만하며 거의 나무 데크로 이루어져 있다. 그러나 길이 휠체어 1대 정도만 지나갈 수 있을 정도로 좁아서 보행이 지체될 수 있다.
-         보통 통행로에 나무가 있으면 지장이 없도록 옮겨 심지만 배봉산 무장애 숲길에서는 자연을 있는 그대로 보존하기를 택했다. 그래서 산책로를 걷다가 나무와 마주치는 일이 허다하다. 행여 충돌할 경우를 대비하여 얼굴 높이에 쿠션을 대놓긴 했지만 간혹 그렇지 않은 나무가 있어 주의가 필요하다.
-         한편 길을 따라 설치된 난간에는 시각장애인을 위한 점자 표지가 부착되어 있다. 하지만 ‘3미터앞 좌로꺽임’처럼 띄어쓰기와 맞춤법을 지키지 않아 가독성이 떨어지는 편이다. 그밖에 편의시설에는 난간을 겸한 벤치와 전동휠체어 충전소, 장애인 화장실 등이 있다. 배봉산 무장애 숲길의 자랑거리인 350m에 달하는 ‘맨발로 걷는 황톳길’ 체험 구간도 마련되어 있다. 신발은 옆에 보관대에 벗어두면 된다.
-         ‘무장애길’은 서울뿐 아니라 전국 곳곳에 있다. 하지만 우리나라 법률에는 무장애길에 대한 규정이 없다. 그를 보강하고자 ‘장애물 없는 생활환경 인증제도(BF제도)’를 도입해 길의 폭을 1.2m 이상, 경사 3.18도 이하로 권장하고 있다. 그러나 강제가 아니기에 크게 엇나가지 않으면 무장애길로 본다. 그러므로 같은 무장애길이라도 서로 상이한 경우가 많다.
-
- */

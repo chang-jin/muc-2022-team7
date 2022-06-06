@@ -26,6 +26,7 @@ import com.snu.muc.dogeeye.databinding.ActivityMainBinding;
 import com.snu.muc.dogeeye.model.Quest;
 import com.snu.muc.dogeeye.ui.GalleryActivity;
 import com.snu.muc.dogeeye.ui.RecordActivity;
+import com.snu.muc.dogeeye.ui.SuggestActivity;
 import com.snu.muc.dogeeye.ui.TestActivity;
 import com.snu.muc.dogeeye.ui.logs.logsActivity;
 
@@ -152,8 +153,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.gallery.setOnClickListener(view -> {
-            // TODO : Change to gallery
             Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
+            startActivity(intent);
+        });
+
+        binding.mainSuggest.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, SuggestActivity.class);
             startActivity(intent);
         });
 
