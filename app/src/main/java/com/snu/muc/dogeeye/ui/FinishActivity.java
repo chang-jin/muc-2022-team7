@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -124,12 +125,18 @@ public class FinishActivity extends AppCompatActivity {
             File imgFile = new File(imagePath + File.separator + fileName);
             if (imgFile.exists()) {
                 Bitmap target = BitmapFactory.decodeFile(imgFile.getAbsolutePath()).copy(Bitmap.Config.ARGB_8888, true);
-                return Bitmap.createScaledBitmap(target, 1000, 1000, false);
+                return rotateBitmap(Bitmap.createScaledBitmap(target, 1000, 1000, false), 90f);
             } else {
                 Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.walk_background).copy(Bitmap.Config.ARGB_8888, true);
                 return Bitmap.createScaledBitmap(target, 1000, 1000, false);
             }
         }
+    }
+
+    public Bitmap rotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
     private void shareTheWalk(Project current, List<PhotoEntity> photos) {
