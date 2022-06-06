@@ -93,7 +93,7 @@ public class GalleryActivity extends AppCompatActivity {
                 titleTextView.setText(
                         toFormat.format(date)  + " / " +
                                 "Walk " + String.valueOf(project.getId()));
-            } catch (ParseException e) {
+            } catch (ParseException | NullPointerException e) {
                 e.printStackTrace();
             }
             titleTextView.setTextSize(30);

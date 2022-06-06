@@ -24,7 +24,7 @@ public class PhotoStamp {
     int color = Color.WHITE;
     int size = 25;
 
-    String[] random_stamps = new String[] {
+    String[] random_stamps = new String[]{
             "There was nowhere to go but everywhere",
             "How far can I go?",
             "The longest journey begins with a single step.",
@@ -33,7 +33,7 @@ public class PhotoStamp {
     };
 
 
-    public Bitmap stamp(Bitmap src, float totalDistance){
+    public Bitmap stamp(Bitmap src, float totalDistance) {
         int w = src.getWidth();
         int h = src.getHeight();
         Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
@@ -55,7 +55,7 @@ public class PhotoStamp {
         Rect textBounds = new Rect();
         paint.getTextBounds(customString, 0, customString.length(), textBounds);
         canvas.drawText(customString, -textBounds.left, -textBounds.top, paint);
-        canvas.drawText(totalDistance + "KM", -textBounds.left, -2 * textBounds.top, paint );
+        canvas.drawText(totalDistance + "KM", -textBounds.left, -2 * textBounds.top, paint);
 
         return result;
     }
@@ -77,7 +77,8 @@ public class PhotoStamp {
         paintForText.setTextAlign(Paint.Align.CENTER);
 
         String customString = random_stamps[new Random().nextInt(random_stamps.length)];
-        canvas.drawText(customString,500.0f,50.0f, paintForText);
+        drawBackground(canvas);
+        canvas.drawText(customString, 500.0f, 50.0f, paintForText);
 
         paintForText.setTextSize(50);
 
@@ -85,6 +86,16 @@ public class PhotoStamp {
         canvas.drawText(String.format("%.2f M", current.getEveryMovingDistance()), 500.0f, 950.0f, paintForText); // Distance
         canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
 //        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
+    }
+
+    private void drawBackground(Canvas canvas) {
+        Paint paint = new Paint();
+        Paint.FontMetrics fm = new Paint.FontMetrics();
+        paint.setColor(Color.WHITE);
+        paint.getFontMetrics(fm);
+        paint.setAlpha(150);
+        canvas.drawRect(0.0f, 0.0f, 1000.0f, 70.0f, paint);
+        canvas.drawRect(0.0f, 900.0f, 1000.0f, 970.0f, paint);
     }
 
     public void stamp_customString(Bitmap image, Project current, String customString) {
@@ -103,7 +114,7 @@ public class PhotoStamp {
         paintForText.setTextSize(40);
         paintForText.setTextAlign(Paint.Align.CENTER);
 
-        canvas.drawText(customString,500.0f,50.0f, paintForText);
+        canvas.drawText(customString, 500.0f, 50.0f, paintForText);
 
         paintForText.setTextSize(50);
 
@@ -112,7 +123,6 @@ public class PhotoStamp {
         canvas.drawText(String.format("%d/%d", start.getMonthOfYear(), start.getDayOfMonth()), 800.0f, 950.0f, paintForText); // Date
 //        canvas.drawText(String.format("%s", current.getStartTime()), 800.0f, 950.0f, paintForText); // Time
     }
-
 
 
 }
